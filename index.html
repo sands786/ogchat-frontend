@@ -96,10 +96,9 @@
         <div class="badge">Verifiable AI</div>
       </div>
       <div class="model-selector">
-        <button class="model-btn active" data-model="openai/gpt-4o-mini">GPT-4o mini</button>
-        <button class="model-btn" data-model="openai/gpt-4o">GPT-4o</button>
-        <button class="model-btn" data-model="meta-llama/Meta-Llama-3-8B-Instruct">Llama 3 8B</button>
-        <button class="model-btn" data-model="mistralai/Mistral-7B-Instruct-v0.3">Mistral 7B</button>
+        <button class="model-btn active" data-model="openai/gpt-4o">GPT-4o</button>
+        <button class="model-btn" data-model="anthropic/claude-3-5-haiku">Claude Haiku</button>
+        <button class="model-btn" data-model="google/gemini-2-0-flash">Gemini Flash</button>
       </div>
       <div class="header-right">
         <a href="https://opengradient.ai" target="_blank" class="powered-by">Powered by OpenGradient ↗</a>
@@ -119,7 +118,7 @@
         <div class="starters">
           <button class="starter" onclick="setInput('Explain verifiable AI in simple terms')">Explain verifiable AI in simple terms</button>
           <button class="starter" onclick="setInput('What makes OpenGradient unique?')">What makes OpenGradient unique?</button>
-          <button class="starter" onclick="setInput('Write a haiku about blockchain')">Write a haiku about blockchain</button>
+          <button class="starter" onclick="setInput('What is blockchain in one sentence?')">What is blockchain in one sentence?</button>
         </div>
       </div>
       <div class="messages hidden" id="messages"></div>
@@ -147,7 +146,7 @@
     const BACKEND = "https://og-chat-backend-production.up.railway.app";
     let messages = [];
     let loading = false;
-    let selectedModel = "openai/gpt-4o-mini";
+    let selectedModel = "openai/gpt-4o";
 
     document.querySelectorAll(".model-btn").forEach(btn => {
       btn.addEventListener("click", () => {
@@ -210,7 +209,7 @@
             <a href="https://explorer.opengradient.ai/tx/${msg.txHash}" target="_blank" class="tx-hash">
               ${msg.txHash.slice(0,10)}...${msg.txHash.slice(-8)} ↗
             </a>
-            ${msg.model ? `<span class="model-tag">${msg.model.split("/")[1]}</span>` : ""}
+            ${msg.model ? `<span class="model-tag">${msg.model.split("/")[1] || msg.model}</span>` : ""}
           </div>` : "";
         return `<div class="message-row ${isUser ? "user" : "ai"}">
           <div class="avatar">${isUser ? "U" : "⬡"}</div>
@@ -228,12 +227,17 @@
       const text = inputEl.value.trim();
       if (!text || loading) return;
       hideError();
+
+      // Add user message
       messages.push({ role: "user", content: text });
       messages.push({ pending: true });
       inputEl.value = "";
       setLoading(true);
       renderMessages();
-      const history = messages.filter(m => !m.pending).slice(0,-1).map(({ role, content }) => ({ role, content }));
+
+      // FIX: Send ALL non-pending messages including the current user message
+      const history = messages.filter(m => !m.pending).map(({ role, content }) => ({ role, content }));
+
       try {
         const res = await fetch(`${BACKEND}/api/chat`, {
           method: "POST",
@@ -242,10 +246,10 @@
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.detail || data.error || "Something went wrong");
-        messages.pop();
+        messages.pop(); // remove pending
         messages.push({ role: "assistant", content: data.content, txHash: data.payment_hash, model: data.model });
       } catch (e) {
-        messages.pop();
+        messages.pop(); // remove pending
         showError(e.message || "Unknown error");
       } finally {
         setLoading(false);
