@@ -4,135 +4,1206 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>OG Verifiable Chat — Powered by OpenGradient</title>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    :root { --bg:#0a0a0f; --surface:#111118; --surface2:#1a1a24; --border:#2a2a3a; --accent:#7c6cfc; --accent2:#00e5c0; --text:#e8e8f0; --text-muted:#6b6b80; }
-    * { box-sizing:border-box; margin:0; padding:0; }
-    html,body { height:100%; background:var(--bg); color:var(--text); font-family:'Syne',sans-serif; -webkit-font-smoothing:antialiased; }
-    ::selection { background:var(--accent); color:white; }
-    ::-webkit-scrollbar { width:4px; } ::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
-    .app { display:flex; flex-direction:column; height:100vh; }
-    .header { display:flex; align-items:center; justify-content:space-between; padding:0 24px; height:60px; border-bottom:1px solid var(--border); background:var(--surface); flex-shrink:0; gap:16px; }
-    .logo { display:flex; align-items:center; gap:8px; cursor:pointer; }
-    .logo-icon { font-size:20px; color:var(--accent); }
-    .logo-text { font-weight:800; font-size:16px; letter-spacing:-0.02em; }
-    .badge { font-family:'Space Mono',monospace; font-size:10px; padding:3px 8px; border:1px solid var(--accent); color:var(--accent); border-radius:20px; text-transform:uppercase; letter-spacing:.05em; }
-    .header-left { display:flex; align-items:center; gap:12px; }
-    .header-right { display:flex; align-items:center; gap:12px; }
-    .powered-by { font-family:'Space Mono',monospace; font-size:11px; color:var(--text-muted); text-decoration:none; }
-    .powered-by:hover { color:var(--accent2); }
-    .creator-btn { font-family:'Space Mono',monospace; font-size:11px; padding:5px 12px; border:1px solid var(--border); background:transparent; color:var(--text-muted); border-radius:6px; cursor:pointer; transition:all .15s; }
-    .creator-btn:hover { border-color:var(--accent); color:var(--accent); }
-    .model-selector { display:flex; gap:4px; background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:3px; }
-    .model-btn { font-family:'Space Mono',monospace; font-size:11px; padding:5px 10px; border:none; background:transparent; color:var(--text-muted); border-radius:6px; cursor:pointer; transition:all .15s; }
-    .model-btn:hover { color:var(--text); background:var(--surface2); }
-    .model-btn.active { background:var(--accent); color:white; }
-    .main { flex:1; overflow-y:auto; padding:24px; }
-    .empty { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:calc(100vh - 200px); text-align:center; gap:20px; }
-    .empty-icon { font-size:56px; color:var(--accent); filter:drop-shadow(0 0 24px rgba(124,108,252,.4)); }
-    .empty-title { font-weight:800; font-size:clamp(28px,5vw,48px); letter-spacing:-.03em; background:linear-gradient(135deg,var(--text) 0%,var(--accent) 50%,var(--accent2) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
-    .empty-desc { font-size:15px; color:var(--text-muted); max-width:500px; line-height:1.7; }
-    .empty-desc strong { color:var(--accent2); }
-    .features { display:flex; gap:20px; flex-wrap:wrap; justify-content:center; }
-    .feature { display:flex; align-items:center; gap:8px; font-family:'Space Mono',monospace; font-size:12px; color:var(--text-muted); }
-    .feature-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
-    .starters { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; }
-    .starter { font-family:'Space Mono',monospace; font-size:12px; padding:8px 16px; background:var(--surface); border:1px solid var(--border); color:var(--text-muted); border-radius:8px; cursor:pointer; transition:all .15s; }
-    .starter:hover { border-color:var(--accent); color:var(--text); }
-    .messages { display:flex; flex-direction:column; gap:20px; max-width:760px; margin:0 auto; }
-    .message-row { display:flex; gap:12px; animation:fadeUp .25s ease both; }
-    .message-row.user { flex-direction:row-reverse; }
-    .avatar { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-family:'Space Mono',monospace; font-size:12px; font-weight:700; flex-shrink:0; background:var(--surface2); border:1px solid var(--border); color:var(--text-muted); }
-    .message-row.ai .avatar { background:linear-gradient(135deg,var(--accent),var(--accent2)); border-color:transparent; color:white; font-size:16px; }
-    .bubble { max-width:70%; }
-    .message-row.user .bubble { background:#1e1e2e; border:1px solid var(--border); border-radius:16px 4px 16px 16px; padding:12px 16px; }
-    .message-row.ai .bubble { background:#141420; border:1px solid var(--border); border-radius:4px 16px 16px 16px; padding:12px 16px; }
-    .msg-content { font-size:15px; line-height:1.65; white-space:pre-wrap; word-break:break-word; }
-    .typing { display:flex; gap:4px; align-items:center; color:var(--accent); font-size:10px; padding:4px 0; }
-    .typing span { animation:blink 1.2s infinite; }
-    .typing span:nth-child(2) { animation-delay:.2s; }
-    .typing span:nth-child(3) { animation-delay:.4s; }
-    .receipt { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:10px; padding-top:10px; border-top:1px solid var(--border); }
-    .receipt-label { display:flex; align-items:center; gap:6px; font-family:'Space Mono',monospace; font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.05em; }
-    .receipt-dot { width:6px; height:6px; border-radius:50%; background:var(--accent2); box-shadow:0 0 6px var(--accent2); }
-    .tx-hash { font-family:'Space Mono',monospace; font-size:11px; color:var(--accent); text-decoration:none; }
-    .tx-hash:hover { color:var(--accent2); }
-    .model-tag { font-family:'Space Mono',monospace; font-size:10px; padding:2px 6px; background:var(--surface2); border:1px solid var(--border); border-radius:4px; color:var(--text-muted); }
-    .error-banner { margin:0 24px 8px; padding:10px 16px; background:rgba(252,108,108,.1); border:1px solid rgba(252,108,108,.3); border-radius:8px; font-family:'Space Mono',monospace; font-size:12px; color:#fc6c6c; display:flex; justify-content:space-between; align-items:center; }
-    .error-banner button { background:none; border:none; color:#fc6c6c; cursor:pointer; font-size:14px; }
-    .hidden { display:none!important; }
-    .footer { flex-shrink:0; padding:12px 24px 16px; border-top:1px solid var(--border); background:var(--surface); }
-    .input-container { display:flex; gap:10px; align-items:flex-end; max-width:760px; margin:0 auto; }
-    .input { flex:1; background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:12px 16px; color:var(--text); font-family:'Syne',sans-serif; font-size:15px; resize:none; outline:none; transition:border-color .15s; line-height:1.5; }
-    .input:focus { border-color:var(--accent); }
-    .input::placeholder { color:var(--text-muted); }
-    .send-btn { width:44px; height:44px; border-radius:10px; background:var(--accent); border:none; color:white; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .15s; flex-shrink:0; }
-    .send-btn:hover:not(:disabled) { background:#6a5ce8; transform:scale(1.05); }
-    .send-btn:disabled { opacity:.4; cursor:not-allowed; }
-    .footer-note { text-align:center; font-family:'Space Mono',monospace; font-size:11px; color:var(--text-muted); margin-top:10px; }
-    .footer-note a { color:var(--accent2); text-decoration:none; }
-    .spinner { width:16px; height:16px; border:2px solid rgba(255,255,255,.3); border-top-color:white; border-radius:50%; animation:spin .6s linear infinite; display:inline-block; }
+    /* ============================================
+       CSS VARIABLES & BASE STYLES
+       ============================================ */
+    :root {
+      --neon-cyan: #00D4FF;
+      --neon-magenta: #FF00A0;
+      --neon-purple: #B829F7;
+      --neon-green: #00FF9D;
+      --neon-yellow: #FFE600;
+      --void-black: #050508;
+      --void-dark: #0A0A0F;
+      --surface: #111118;
+      --surface-2: #1a1a24;
+      --border-color: #2a2a3a;
+      --text: #e8e8f0;
+      --text-muted: #6b6b80;
+    }
 
-    /* Profile page */
-    .profile-page { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:calc(100vh - 60px); padding:40px 24px; animation:fadeUp .3s ease both; }
-    .profile-card { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:40px; max-width:480px; width:100%; text-align:center; }
-    .profile-avatar { width:80px; height:80px; border-radius:50%; background:linear-gradient(135deg,var(--accent),var(--accent2)); display:flex; align-items:center; justify-content:center; font-size:36px; margin:0 auto 20px; box-shadow:0 0 30px rgba(124,108,252,.3); }
-    .profile-name { font-weight:800; font-size:28px; letter-spacing:-.02em; margin-bottom:6px; }
-    .profile-title { font-family:'Space Mono',monospace; font-size:12px; color:var(--accent2); margin-bottom:20px; text-transform:uppercase; letter-spacing:.1em; }
-    .profile-bio { font-size:14px; color:var(--text-muted); line-height:1.7; margin-bottom:28px; }
-    .profile-links { display:flex; flex-direction:column; gap:12px; margin-bottom:28px; }
-    .profile-link { display:flex; align-items:center; gap:12px; padding:12px 16px; background:var(--surface2); border:1px solid var(--border); border-radius:10px; text-decoration:none; color:var(--text); transition:all .15s; }
-    .profile-link:hover { border-color:var(--accent); transform:translateX(4px); }
-    .profile-link-icon { font-size:20px; width:28px; text-align:center; }
-    .profile-link-info { text-align:left; }
-    .profile-link-label { font-family:'Space Mono',monospace; font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.05em; }
-    .profile-link-value { font-size:14px; font-weight:600; color:var(--accent); }
-    .profile-divider { height:1px; background:var(--border); margin:24px 0; }
-    .profile-project-label { font-family:'Space Mono',monospace; font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.05em; margin-bottom:10px; text-align:left; }
-    .profile-repo { display:flex; align-items:center; gap:10px; padding:12px 16px; background:var(--surface2); border:1px solid var(--border); border-radius:10px; text-decoration:none; color:var(--text); transition:all .15s; }
-    .profile-repo:hover { border-color:var(--accent2); }
-    .profile-repo-name { font-family:'Space Mono',monospace; font-size:13px; color:var(--accent2); }
-    .profile-repo-desc { font-size:12px; color:var(--text-muted); margin-top:2px; }
-    .back-btn { margin-top:20px; font-family:'Space Mono',monospace; font-size:12px; color:var(--text-muted); background:none; border:none; cursor:pointer; }
-    .back-btn:hover { color:var(--accent); }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-    @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
-    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-    @keyframes spin { to{transform:rotate(360deg)} }
+    html, body {
+      height: 100%;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--void-black);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    ::selection {
+      background: var(--neon-cyan);
+      color: var(--void-black);
+    }
+
+    /* ============================================
+       SCROLLBAR STYLING
+       ============================================ */
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--void-black);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, var(--neon-cyan), var(--neon-magenta));
+      border-radius: 2px;
+    }
+
+    /* ============================================
+       ANIMATED BACKGROUND
+       ============================================ */
+    #bg-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background: linear-gradient(135deg, #050508 0%, #0A0A0F 50%, #111118 100%);
+    }
+
+    .grid-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      background-image: 
+        linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+      pointer-events: none;
+    }
+
+    .scanlines::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 212, 255, 0.03) 2px,
+        rgba(0, 212, 255, 0.03) 4px
+      );
+      pointer-events: none;
+    }
+
+    /* ============================================
+       UTILITY CLASSES
+       ============================================ */
+    .font-mono {
+      font-family: 'JetBrains Mono', 'SF Mono', monospace;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, var(--neon-cyan) 0%, var(--neon-magenta) 50%, var(--neon-purple) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gradient-text-animated {
+      background: linear-gradient(90deg, var(--neon-cyan), var(--neon-magenta), var(--neon-purple), var(--neon-cyan));
+      background-size: 300% 100%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: gradientShift 3s ease infinite;
+    }
+
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .glass {
+      background: rgba(10, 10, 15, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    .glow-cyan {
+      box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+    }
+
+    /* ============================================
+       APP CONTAINER
+       ============================================ */
+    .app {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ============================================
+       HEADER
+       ============================================ */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      height: 64px;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      color: inherit;
+    }
+
+    .logo-icon {
+      width: 24px;
+      height: 24px;
+      color: var(--neon-cyan);
+      transition: color 0.3s;
+    }
+
+    .logo:hover .logo-icon {
+      color: var(--neon-magenta);
+    }
+
+    .logo-text {
+      font-weight: 800;
+      font-size: 18px;
+      letter-spacing: -0.02em;
+    }
+
+    .badge {
+      padding: 4px 10px;
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--neon-cyan);
+      border: 1px solid var(--neon-cyan);
+      border-radius: 20px;
+    }
+
+    .model-selector {
+      display: flex;
+      gap: 4px;
+      padding: 4px;
+      background: var(--void-dark);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+    }
+
+    .model-btn {
+      padding: 6px 12px;
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      background: transparent;
+      border: none;
+      border-radius: 6px;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .model-btn:hover {
+      color: var(--text);
+      background: var(--surface-2);
+    }
+
+    .model-btn.active {
+      background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+      color: white;
+      box-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .creator-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      background: transparent;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .creator-btn:hover {
+      border-color: var(--neon-cyan);
+      color: var(--neon-cyan);
+    }
+
+    .powered-by {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .powered-by:hover {
+      color: var(--neon-green);
+    }
+
+    @media (min-width: 640px) {
+      .powered-by {
+        display: flex;
+      }
+    }
+
+    /* ============================================
+       MAIN CONTENT
+       ============================================ */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ============================================
+       EMPTY STATE
+       ============================================ */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: calc(100vh - 200px);
+      padding: 48px 24px;
+      text-align: center;
+    }
+
+    .empty-icon-wrapper {
+      position: relative;
+      margin-bottom: 32px;
+    }
+
+    .empty-icon-glow {
+      position: absolute;
+      inset: -20px;
+      background: var(--neon-cyan);
+      border-radius: 50%;
+      filter: blur(40px);
+      opacity: 0.3;
+    }
+
+    .empty-icon {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      color: var(--neon-cyan);
+      animation: iconFloat 3s ease-in-out infinite;
+    }
+
+    @keyframes iconFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .empty-title {
+      font-weight: 800;
+      font-size: clamp(32px, 6vw, 56px);
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+    }
+
+    .empty-desc {
+      font-size: 15px;
+      color: var(--text-muted);
+      max-width: 500px;
+      line-height: 1.7;
+      margin-bottom: 32px;
+    }
+
+    .empty-desc strong {
+      color: var(--neon-green);
+      font-weight: 500;
+    }
+
+    .features {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .feature {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border-color);
+      border-radius: 100px;
+    }
+
+    .feature-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      animation: dotPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes dotPulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.3); opacity: 0.7; }
+    }
+
+    .feature-text {
+      font-size: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-muted);
+    }
+
+    .starters {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .starter {
+      padding: 10px 18px;
+      background: var(--surface);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      font-size: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .starter:hover {
+      border-color: var(--neon-cyan);
+      color: var(--neon-cyan);
+      transform: translateY(-2px);
+    }
+
+    /* ============================================
+       MESSAGES
+       ============================================ */
+    .messages-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 32px 24px;
+    }
+
+    .messages {
+      max-width: 800px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .message {
+      display: flex;
+      gap: 12px;
+      animation: messageSlideIn 0.3s ease-out forwards;
+    }
+
+    .message.user {
+      flex-direction: row-reverse;
+    }
+
+    @keyframes messageSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .avatar.user {
+      background: var(--surface-2);
+      border: 1px solid var(--border-color);
+    }
+
+    .avatar.ai {
+      background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+      box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+    }
+
+    .avatar svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .avatar.user svg {
+      color: var(--text-muted);
+    }
+
+    .avatar.ai svg {
+      color: white;
+    }
+
+    .bubble {
+      max-width: 75%;
+      padding: 14px 18px;
+    }
+
+    .message.user .bubble {
+      background: #1e1e2e;
+      border: 1px solid var(--border-color);
+      border-radius: 18px 18px 4px 18px;
+    }
+
+    .message.ai .bubble {
+      background: #141420;
+      border: 1px solid var(--border-color);
+      border-radius: 4px 18px 18px 18px;
+    }
+
+    .msg-content {
+      font-size: 15px;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      word-break: break-word;
+      color: var(--text);
+    }
+
+    /* Typing indicator */
+    .typing {
+      display: flex;
+      gap: 6px;
+      padding: 4px 0;
+    }
+
+    .typing-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      animation: typingBounce 1.4s ease-in-out infinite;
+    }
+
+    .typing-dot:nth-child(1) { background: var(--neon-cyan); }
+    .typing-dot:nth-child(2) { background: var(--neon-magenta); animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { background: var(--neon-purple); animation-delay: 0.4s; }
+
+    @keyframes typingBounce {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-10px); }
+    }
+
+    /* Receipt */
+    .receipt {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .receipt-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      background: rgba(0, 255, 157, 0.1);
+      border: 1px solid rgba(0, 255, 157, 0.3);
+      border-radius: 6px;
+    }
+
+    .receipt-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--neon-green);
+      box-shadow: 0 0 6px var(--neon-green);
+    }
+
+    .receipt-label {
+      font-size: 9px;
+      font-family: 'JetBrains Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--neon-green);
+    }
+
+    .tx-hash {
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--neon-cyan);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: color 0.3s;
+    }
+
+    .tx-hash:hover {
+      color: var(--neon-green);
+    }
+
+    .tx-hash svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    .model-tag {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      background: var(--surface-2);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      font-size: 9px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-muted);
+    }
+
+    .model-tag svg {
+      width: 10px;
+      height: 10px;
+    }
+
+    /* ============================================
+       ERROR BANNER
+       ============================================ */
+    .error-banner {
+      margin: 0 24px 12px;
+      padding: 12px 16px;
+      background: rgba(252, 108, 108, 0.1);
+      border: 1px solid rgba(252, 108, 108, 0.3);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      animation: messageSlideIn 0.3s ease-out;
+    }
+
+    .error-content {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .error-icon {
+      width: 16px;
+      height: 16px;
+      color: #fc6c6c;
+    }
+
+    .error-text {
+      font-size: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      color: #fc6c6c;
+    }
+
+    .error-close {
+      background: none;
+      border: none;
+      color: #fc6c6c;
+      cursor: pointer;
+      padding: 4px;
+      transition: color 0.3s;
+    }
+
+    .error-close:hover {
+      color: white;
+    }
+
+    .error-close svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* ============================================
+       INPUT AREA
+       ============================================ */
+    .input-area {
+      border-top: 1px solid var(--border-color);
+      padding: 16px 24px 20px;
+    }
+
+    .input-container {
+      max-width: 800px;
+      margin: 0 auto;
+      display: flex;
+      gap: 12px;
+      align-items: flex-end;
+    }
+
+    .input-wrapper {
+      flex: 1;
+      position: relative;
+    }
+
+    .input {
+      width: 100%;
+      background: var(--void-dark);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 14px 18px;
+      font-size: 15px;
+      font-family: 'Inter', sans-serif;
+      color: var(--text);
+      resize: none;
+      outline: none;
+      line-height: 1.5;
+      transition: all 0.3s;
+    }
+
+    .input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .input:focus {
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.2), 0 0 20px rgba(0, 212, 255, 0.3);
+    }
+
+    .send-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+      border: none;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+      flex-shrink: 0;
+    }
+
+    .send-btn:hover:not(:disabled) {
+      transform: scale(1.05);
+      box-shadow: 0 5px 20px rgba(0, 212, 255, 0.4);
+    }
+
+    .send-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .send-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .spinner {
+      animation: spin 0.6s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .input-note {
+      text-align: center;
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-muted);
+      margin-top: 12px;
+    }
+
+    .input-note a {
+      color: var(--neon-green);
+      text-decoration: none;
+      position: relative;
+    }
+
+    .input-note a::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: linear-gradient(90deg, var(--neon-cyan), var(--neon-magenta));
+      transition: width 0.3s;
+    }
+
+    .input-note a:hover::after {
+      width: 100%;
+    }
+
+    /* ============================================
+       PROFILE VIEW
+       ============================================ */
+    .profile-view {
+      display: none;
+      min-height: calc(100vh - 64px);
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px;
+      position: relative;
+    }
+
+    .profile-view.active {
+      display: flex;
+    }
+
+    .profile-bg-glow-1 {
+      position: absolute;
+      top: 25%;
+      left: 25%;
+      width: 250px;
+      height: 250px;
+      background: var(--neon-cyan);
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.2;
+      pointer-events: none;
+    }
+
+    .profile-bg-glow-2 {
+      position: absolute;
+      bottom: 25%;
+      right: 25%;
+      width: 250px;
+      height: 250px;
+      background: var(--neon-magenta);
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.2;
+      pointer-events: none;
+    }
+
+    .profile-card {
+      position: relative;
+      width: 100%;
+      max-width: 420px;
+      background: linear-gradient(135deg, rgba(17, 17, 24, 0.95), rgba(26, 26, 36, 0.95));
+      border: 1px solid rgba(0, 212, 255, 0.2);
+      border-radius: 24px;
+      padding: 40px;
+      box-shadow: 0 0 60px rgba(0, 212, 255, 0.1);
+      animation: messageSlideIn 0.4s ease-out;
+      z-index: 10;
+    }
+
+    .profile-avatar {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 20px;
+    }
+
+    .profile-avatar-glow {
+      position: absolute;
+      inset: -10px;
+      background: linear-gradient(135deg, var(--neon-cyan), var(--neon-magenta));
+      border-radius: 50%;
+      filter: blur(20px);
+      opacity: 0.5;
+    }
+
+    .profile-avatar-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+    }
+
+    .profile-name {
+      font-weight: 800;
+      font-size: 28px;
+      text-align: center;
+      margin-bottom: 6px;
+    }
+
+    .profile-title {
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--neon-green);
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .profile-bio {
+      font-size: 14px;
+      color: var(--text-muted);
+      text-align: center;
+      line-height: 1.7;
+      margin-bottom: 28px;
+    }
+
+    .profile-links {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .profile-link {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      background: var(--void-dark);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      text-decoration: none;
+      color: var(--text);
+      transition: all 0.3s;
+    }
+
+    .profile-link:hover {
+      border-color: var(--neon-cyan);
+      transform: translateX(4px);
+    }
+
+    .profile-link:nth-child(2):hover {
+      border-color: var(--neon-purple);
+    }
+
+    .profile-link-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: var(--surface-2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+    }
+
+    .profile-link:hover .profile-link-icon {
+      background: rgba(0, 212, 255, 0.1);
+    }
+
+    .profile-link:nth-child(2):hover .profile-link-icon {
+      background: rgba(184, 41, 247, 0.1);
+    }
+
+    .profile-link-icon svg {
+      width: 20px;
+      height: 20px;
+      color: var(--text-muted);
+      transition: color 0.3s;
+    }
+
+    .profile-link:hover .profile-link-icon svg {
+      color: var(--neon-cyan);
+    }
+
+    .profile-link:nth-child(2):hover .profile-link-icon svg {
+      color: var(--neon-purple);
+    }
+
+    .profile-link-info {
+      flex: 1;
+    }
+
+    .profile-link-label {
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+    }
+
+    .profile-link-value {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--neon-cyan);
+    }
+
+    .profile-link:nth-child(2) .profile-link-value {
+      color: var(--neon-purple);
+    }
+
+    .profile-link-arrow {
+      width: 16px;
+      height: 16px;
+      color: var(--text-muted);
+      transition: color 0.3s;
+    }
+
+    .profile-link:hover .profile-link-arrow {
+      color: var(--neon-cyan);
+    }
+
+    .profile-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+      margin: 24px 0;
+    }
+
+    .profile-section-label {
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    .profile-repo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      background: var(--void-dark);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      text-decoration: none;
+      color: var(--text);
+      transition: all 0.3s;
+    }
+
+    .profile-repo:hover {
+      border-color: var(--neon-green);
+    }
+
+    .profile-repo-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: var(--surface-2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+    }
+
+    .profile-repo:hover .profile-repo-icon {
+      background: rgba(0, 255, 157, 0.1);
+    }
+
+    .profile-repo-icon svg {
+      width: 20px;
+      height: 20px;
+      color: var(--text-muted);
+      transition: color 0.3s;
+    }
+
+    .profile-repo:hover .profile-repo-icon svg {
+      color: var(--neon-green);
+    }
+
+    .profile-repo-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .profile-repo-name {
+      font-size: 13px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--neon-green);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .profile-repo-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .profile-repo-arrow {
+      width: 16px;
+      height: 16px;
+      color: var(--text-muted);
+      transition: color 0.3s;
+      flex-shrink: 0;
+    }
+
+    .profile-repo:hover .profile-repo-arrow {
+      color: var(--neon-green);
+    }
+
+    .profile-footer {
+      margin-top: 24px;
+      text-align: center;
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-muted);
+    }
+
+    .back-btn {
+      position: absolute;
+      top: 24px;
+      left: 24px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: color 0.3s;
+      z-index: 20;
+    }
+
+    .back-btn:hover {
+      color: var(--neon-cyan);
+    }
+
+    .back-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* ============================================
+       HIDDEN CLASS
+       ============================================ */
+    .hidden {
+      display: none !important;
+    }
+
+    /* ============================================
+       RESPONSIVE
+       ============================================ */
+    @media (max-width: 768px) {
+      .model-selector {
+        display: none;
+      }
+      
+      .bubble {
+        max-width: 85%;
+      }
+      
+      .profile-card {
+        padding: 28px;
+      }
+    }
   </style>
+<base target="_blank">
 </head>
 <body>
-<div class="app">
-  <header class="header">
-    <div class="header-left">
-      <div class="logo" onclick="showChat()">
-        <span class="logo-icon">⬡</span>
-        <span class="logo-text">OG Chat</span>
-      </div>
-      <div class="badge">Verifiable AI</div>
-    </div>
-    <div class="model-selector" id="model-selector">
-      <button class="model-btn active" data-model="openai/gpt-4o">GPT-4o</button>
-      <button class="model-btn" data-model="anthropic/claude-3-5-haiku">Claude Haiku</button>
-      <button class="model-btn" data-model="google/gemini-2-0-flash">Gemini Flash</button>
-    </div>
-    <div class="header-right">
-      <button class="creator-btn" onclick="showProfile()">👤 Creator</button>
-      <a href="https://opengradient.ai" target="_blank" class="powered-by">Powered by OpenGradient ↗</a>
-    </div>
-  </header>
+  <!-- Animated Background Canvas -->
+  <canvas id="bg-canvas"></canvas>
+  
+  <!-- Grid Background -->
+  <div class="grid-bg"></div>
+  
+  <!-- Scanlines -->
+  <div class="scanlines"></div>
 
-  <!-- CHAT VIEW -->
-  <div id="chat-view">
-    <main class="main" id="main">
-      <div class="empty" id="empty">
-        <div class="empty-icon">⬡</div>
-        <h1 class="empty-title">Verifiable AI Chat</h1>
-        <p class="empty-desc">Every response is executed on OpenGradient's decentralized network. Each message comes with a <strong>blockchain receipt</strong>.</p>
+  <!-- Main App -->
+  <div class="app">
+    <!-- Header -->
+    <header class="header glass">
+      <div class="header-left">
+        <button class="logo" onclick="showChat()">
+          <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2l8.66 5v10L12 22l-8.66-5V7L12 2z"/>
+          </svg>
+          <span class="logo-text">OG Chat</span>
+        </button>
+        <span class="badge">Verifiable AI</span>
+      </div>
+      
+      <div class="model-selector" id="model-selector">
+        <button class="model-btn active" data-model="openai/gpt-4o" onclick="selectModel(this)">GPT-4o</button>
+        <button class="model-btn" data-model="anthropic/claude-3-5-haiku" onclick="selectModel(this)">Claude Haiku</button>
+        <button class="model-btn" data-model="google/gemini-2-0-flash" onclick="selectModel(this)">Gemini Flash</button>
+      </div>
+      
+      <div class="header-right">
+        <button class="creator-btn" onclick="showProfile()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+          Creator
+        </button>
+        <a href="https://opengradient.ai" target="_blank" class="powered-by">
+          Powered by OpenGradient
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
+            <path d="M7 17L17 7M17 7H7M17 7V17"/>
+          </svg>
+        </a>
+      </div>
+    </header>
+
+    <!-- Chat View -->
+    <main class="main" id="chat-view">
+      <!-- Empty State -->
+      <div class="empty-state" id="empty-state">
+        <div class="empty-icon-wrapper">
+          <div class="empty-icon-glow"></div>
+          <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M12 2l8.66 5v10L12 22l-8.66-5V7L12 2z"/>
+          </svg>
+        </div>
+        <h1 class="empty-title gradient-text-animated">Verifiable AI Chat</h1>
+        <p class="empty-desc">
+          Every response is executed on OpenGradient's decentralized network. Each message comes with a <strong>blockchain receipt</strong>.
+        </p>
         <div class="features">
-          <div class="feature"><span class="feature-dot" style="background:var(--accent)"></span>On-chain verified inference</div>
-          <div class="feature"><span class="feature-dot" style="background:var(--accent2)"></span>TEE-secured execution</div>
-          <div class="feature"><span class="feature-dot" style="background:#fc6c6c"></span>Tamper-proof receipts</div>
+          <div class="feature">
+            <span class="feature-dot" style="background: var(--neon-cyan); box-shadow: 0 0 8px var(--neon-cyan);"></span>
+            <span class="feature-text">On-chain verified inference</span>
+          </div>
+          <div class="feature">
+            <span class="feature-dot" style="background: var(--neon-green); box-shadow: 0 0 8px var(--neon-green);"></span>
+            <span class="feature-text">TEE-secured execution</span>
+          </div>
+          <div class="feature">
+            <span class="feature-dot" style="background: var(--neon-magenta); box-shadow: 0 0 8px var(--neon-magenta);"></span>
+            <span class="feature-text">Tamper-proof receipts</span>
+          </div>
         </div>
         <div class="starters">
           <button class="starter" onclick="setInput('Explain verifiable AI in simple terms')">Explain verifiable AI in simple terms</button>
@@ -140,143 +1211,521 @@
           <button class="starter" onclick="setInput('What is blockchain in one sentence?')">What is blockchain in one sentence?</button>
         </div>
       </div>
-      <div class="messages hidden" id="messages"></div>
-    </main>
-    <div class="error-banner hidden" id="error-banner">
-      <span id="error-text"></span>
-      <button onclick="hideError()">✕</button>
-    </div>
-    <footer class="footer">
-      <div class="input-container">
-        <textarea id="input" class="input" placeholder="Send a message… (Enter to send, Shift+Enter for newline)" rows="1"></textarea>
-        <button class="send-btn" id="send-btn" onclick="send()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+
+      <!-- Messages -->
+      <div class="messages-container hidden" id="messages-container">
+        <div class="messages" id="messages"></div>
+      </div>
+
+      <!-- Error Banner -->
+      <div class="error-banner hidden" id="error-banner">
+        <div class="error-content">
+          <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+          <span class="error-text" id="error-text"></span>
+        </div>
+        <button class="error-close" onclick="hideError()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
           </svg>
         </button>
       </div>
-      <p class="footer-note">Responses verified on <a href="https://explorer.opengradient.ai" target="_blank">OpenGradient Network</a></p>
-    </footer>
-  </div>
 
-  <!-- CREATOR PROFILE VIEW -->
-  <div id="profile-view" class="hidden">
-    <div class="profile-page">
+      <!-- Input Area -->
+      <div class="input-area glass">
+        <div class="input-container">
+          <div class="input-wrapper">
+            <textarea 
+              id="input" 
+              class="input" 
+              placeholder="Send a message… (Enter to send, Shift+Enter for newline)" 
+              rows="1"
+              onkeydown="handleKeyDown(event)"
+            ></textarea>
+          </div>
+          <button class="send-btn" id="send-btn" onclick="sendMessage()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13"/>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+            </svg>
+          </button>
+        </div>
+        <p class="input-note">
+          Responses verified on <a href="https://explorer.opengradient.ai" target="_blank">OpenGradient Network</a>
+        </p>
+      </div>
+    </main>
+
+    <!-- Profile View -->
+    <div class="profile-view" id="profile-view">
+      <button class="back-btn" onclick="showChat()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="19" y1="12" x2="5" y2="12"/>
+          <polyline points="12 19 5 12 12 5"/>
+        </svg>
+        Back to Chat
+      </button>
+      
+      <div class="profile-bg-glow-1"></div>
+      <div class="profile-bg-glow-2"></div>
+      
       <div class="profile-card">
-        <div class="profile-avatar">🧠</div>
-        <div class="profile-name">Master Shifu</div>
-        <div class="profile-title">Builder · Web3 Developer</div>
-        <div class="profile-bio">Building verifiable AI applications on OpenGradient's decentralized network. Passionate about blockchain, AI, and open-source development.</div>
+        <div class="profile-avatar">
+          <div class="profile-avatar-glow"></div>
+          <div class="profile-avatar-inner">🧠</div>
+        </div>
+        
+        <h1 class="profile-name">Master Shifu</h1>
+        <p class="profile-title">Builder · Web3 Developer</p>
+        <p class="profile-bio">
+          Building verifiable AI applications on OpenGradient's decentralized network. Passionate about blockchain, AI, and open-source development.
+        </p>
+        
         <div class="profile-links">
           <a href="https://twitter.com/husnain50376345" target="_blank" class="profile-link">
-            <span class="profile-link-icon">𝕏</span>
+            <div class="profile-link-icon">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+              </svg>
+            </div>
             <div class="profile-link-info">
               <div class="profile-link-label">Twitter / X</div>
               <div class="profile-link-value">@husnain50376345</div>
             </div>
+            <svg class="profile-link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M7 17L17 7M17 7H7M17 7V17"/>
+            </svg>
           </a>
+          
           <a href="https://discordapp.com/users/alpha_53645" target="_blank" class="profile-link">
-            <span class="profile-link-icon">💬</span>
+            <div class="profile-link-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+              </svg>
+            </div>
             <div class="profile-link-info">
               <div class="profile-link-label">Discord</div>
               <div class="profile-link-value">alpha_53645</div>
             </div>
+            <svg class="profile-link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M7 17L17 7M17 7H7M17 7V17"/>
+            </svg>
           </a>
         </div>
+        
         <div class="profile-divider"></div>
-        <div class="profile-project-label">Open Source Project</div>
+        
+        <p class="profile-section-label">Open Source Project</p>
         <a href="https://github.com/sands786/og-chat-backend" target="_blank" class="profile-repo">
-          <span style="font-size:20px">🐙</span>
-          <div>
+          <div class="profile-repo-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+              <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+            </svg>
+          </div>
+          <div class="profile-repo-info">
             <div class="profile-repo-name">sands786/og-chat-backend</div>
             <div class="profile-repo-desc">Verifiable AI chat backend powered by OpenGradient</div>
           </div>
+          <svg class="profile-repo-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M7 17L17 7M17 7H7M17 7V17"/>
+          </svg>
         </a>
+        
+        <p class="profile-footer">Built with 💜 on OpenGradient</p>
       </div>
-      <button class="back-btn" onclick="showChat()">← Back to Chat</button>
     </div>
   </div>
-</div>
 
-<script>
-  const BACKEND = "https://og-chat-backend-production.up.railway.app";
-  let messages = [], loading = false, selectedModel = "openai/gpt-4o";
+  <script>
+    // ============================================
+    // CONFIGURATION - EDIT THESE VALUES
+    // ============================================
+    const CONFIG = {
+      // Backend API URL
+      BACKEND_URL: 'https://og-chat-backend-production.up.railway.app',
+      
+      // Explorer URL for transaction links
+      EXPLORER_URL: 'https://explorer.opengradient.ai',
+      
+      // Default AI model
+      DEFAULT_MODEL: 'openai/gpt-4o',
+      
+      // Available models
+      MODELS: {
+        'openai/gpt-4o': 'GPT-4o',
+        'anthropic/claude-3-5-haiku': 'Claude Haiku',
+        'google/gemini-2-0-flash': 'Gemini Flash'
+      }
+    };
 
-  function showChat() {
-    document.getElementById("chat-view").classList.remove("hidden");
-    document.getElementById("profile-view").classList.add("hidden");
-    document.getElementById("model-selector").classList.remove("hidden");
-  }
-  function showProfile() {
-    document.getElementById("chat-view").classList.add("hidden");
-    document.getElementById("profile-view").classList.remove("hidden");
-    document.getElementById("model-selector").classList.add("hidden");
-  }
+    // ============================================
+    // STATE
+    // ============================================
+    let messages = [];
+    let loading = false;
+    let selectedModel = CONFIG.DEFAULT_MODEL;
 
-  document.querySelectorAll(".model-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      document.querySelectorAll(".model-btn").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      selectedModel = btn.dataset.model;
-    });
-  });
+    // ============================================
+    // ANIMATED BACKGROUND
+    // ============================================
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    let animationId;
 
-  document.getElementById("input").addEventListener("keydown", e => {
-    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
-  });
-
-  function setInput(t) { document.getElementById("input").value = t; document.getElementById("input").focus(); }
-  function hideError() { document.getElementById("error-banner").classList.add("hidden"); }
-  function showError(msg) { document.getElementById("error-text").textContent = "⚠ " + msg; document.getElementById("error-banner").classList.remove("hidden"); }
-
-  function setLoading(val) {
-    loading = val;
-    const btn = document.getElementById("send-btn");
-    btn.disabled = val;
-    btn.innerHTML = val ? '<span class="spinner"></span>' : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>';
-  }
-
-  function renderMessages() {
-    const container = document.getElementById("messages");
-    const empty = document.getElementById("empty");
-    if (messages.length === 0) { empty.classList.remove("hidden"); container.classList.add("hidden"); return; }
-    empty.classList.add("hidden"); container.classList.remove("hidden");
-    container.innerHTML = messages.map(msg => {
-      if (msg.pending) return `<div class="message-row ai"><div class="avatar">⬡</div><div class="bubble"><div class="typing"><span>●</span><span>●</span><span>●</span></div></div></div>`;
-      const isUser = msg.role === "user";
-      const receipt = (!isUser && msg.txHash) ? `<div class="receipt"><div class="receipt-label"><span class="receipt-dot"></span>On-chain receipt</div><a href="https://explorer.opengradient.ai/tx/${msg.txHash}" target="_blank" class="tx-hash">${msg.txHash.slice(0,10)}...${msg.txHash.slice(-8)} ↗</a>${msg.model ? `<span class="model-tag">${msg.model.split("/")[1]||msg.model}</span>` : ""}</div>` : "";
-      return `<div class="message-row ${isUser?"user":"ai"}"><div class="avatar">${isUser?"U":"⬡"}</div><div class="bubble"><div class="msg-content">${msg.content.replace(/</g,"&lt;").replace(/>/g,"&gt;")}</div>${receipt}</div></div>`;
-    }).join("");
-    document.getElementById("main").scrollTop = document.getElementById("main").scrollHeight;
-  }
-
-  async function send() {
-    const inputEl = document.getElementById("input");
-    const text = inputEl.value.trim();
-    if (!text || loading) return;
-    hideError();
-    messages.push({ role: "user", content: text });
-    messages.push({ pending: true });
-    inputEl.value = "";
-    setLoading(true);
-    renderMessages();
-    const history = messages.filter(m => !m.pending).map(({ role, content }) => ({ role, content }));
-    try {
-      const res = await fetch(`${BACKEND}/api/chat`, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ messages: history, model: selectedModel }) });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.detail || data.error || "Something went wrong");
-      messages.pop();
-      messages.push({ role:"assistant", content:data.content, txHash:data.payment_hash, model:data.model });
-    } catch(e) {
-      messages.pop();
-      showError(e.message || "Unknown error");
-    } finally {
-      setLoading(false);
-      renderMessages();
-      inputEl.focus();
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
     }
-  }
-  renderMessages();
-</script>
+
+    function initParticles() {
+      const colors = ['#00D4FF', '#FF00A0', '#B829F7', '#00FF9D'];
+      const particleCount = 25;
+      
+      particles = Array.from({ length: particleCount }, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5,
+        size: Math.random() * 2 + 1,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        alpha: Math.random() * 0.5 + 0.2,
+      }));
+    }
+
+    function animateParticles() {
+      ctx.fillStyle = 'rgba(5, 5, 8, 0.1)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      particles.forEach((particle) => {
+        particle.x += particle.vx;
+        particle.y += particle.vy;
+
+        if (particle.x < 0) particle.x = canvas.width;
+        if (particle.x > canvas.width) particle.x = 0;
+        if (particle.y < 0) particle.y = canvas.height;
+        if (particle.y > canvas.height) particle.y = 0;
+
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+        ctx.fillStyle = particle.color;
+        ctx.globalAlpha = particle.alpha;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+
+        const gradient = ctx.createRadialGradient(
+          particle.x, particle.y, 0,
+          particle.x, particle.y, particle.size * 4
+        );
+        gradient.addColorStop(0, particle.color);
+        gradient.addColorStop(1, 'transparent');
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, particle.size * 4, 0, Math.PI * 2);
+        ctx.fillStyle = gradient;
+        ctx.globalAlpha = particle.alpha * 0.3;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      });
+
+      particles.forEach((p1, i) => {
+        particles.slice(i + 1).forEach((p2) => {
+          const dx = p1.x - p2.x;
+          const dy = p1.y - p2.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          if (distance < 150) {
+            ctx.beginPath();
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.strokeStyle = '#00D4FF';
+            ctx.globalAlpha = (1 - distance / 150) * 0.1;
+            ctx.stroke();
+            ctx.globalAlpha = 1;
+          }
+        });
+      });
+
+      animationId = requestAnimationFrame(animateParticles);
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+    initParticles();
+    animateParticles();
+
+    // ============================================
+    // VIEW NAVIGATION
+    // ============================================
+    function showChat() {
+      document.getElementById('chat-view').classList.remove('hidden');
+      document.getElementById('profile-view').classList.remove('active');
+      document.getElementById('model-selector').classList.remove('hidden');
+    }
+
+    function showProfile() {
+      document.getElementById('chat-view').classList.add('hidden');
+      document.getElementById('profile-view').classList.add('active');
+      document.getElementById('model-selector').classList.add('hidden');
+    }
+
+    // ============================================
+    // MODEL SELECTION
+    // ============================================
+    function selectModel(btn) {
+      document.querySelectorAll('.model-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedModel = btn.dataset.model;
+    }
+
+    // ============================================
+    // INPUT HANDLING
+    // ============================================
+    function setInput(text) {
+      const input = document.getElementById('input');
+      input.value = text;
+      input.focus();
+      autoResize(input);
+    }
+
+    function handleKeyDown(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    }
+
+    function autoResize(textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = Math.min(textarea.scrollHeight, 200) + 'px';
+    }
+
+    document.getElementById('input').addEventListener('input', function() {
+      autoResize(this);
+    });
+
+    // ============================================
+    // ERROR HANDLING
+    // ============================================
+    function showError(msg) {
+      document.getElementById('error-text').textContent = msg;
+      document.getElementById('error-banner').classList.remove('hidden');
+    }
+
+    function hideError() {
+      document.getElementById('error-banner').classList.add('hidden');
+    }
+
+    // ============================================
+    // MESSAGE RENDERING
+    // ============================================
+    function generateId() {
+      return Math.random().toString(36).substring(2, 9);
+    }
+
+    function formatTxHash(hash) {
+      if (hash.length <= 18) return hash;
+      return hash.slice(0, 10) + '...' + hash.slice(-8);
+    }
+
+    function renderMessages() {
+      const container = document.getElementById('messages');
+      const emptyState = document.getElementById('empty-state');
+      const messagesContainer = document.getElementById('messages-container');
+
+      if (messages.length === 0) {
+        emptyState.classList.remove('hidden');
+        messagesContainer.classList.add('hidden');
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+      messagesContainer.classList.remove('hidden');
+
+      container.innerHTML = messages.map(msg => {
+        // Pending/typing message
+        if (msg.pending) {
+          return `
+            <div class="message ai">
+              <div class="avatar ai">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2l8.66 5v10L12 22l-8.66-5V7L12 2z"/>
+                </svg>
+              </div>
+              <div class="bubble">
+                <div class="typing">
+                  <span class="typing-dot"></span>
+                  <span class="typing-dot"></span>
+                  <span class="typing-dot"></span>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+
+        const isUser = msg.role === 'user';
+        const receipt = (!isUser && msg.txHash) ? `
+          <div class="receipt">
+            <div class="receipt-badge">
+              <span class="receipt-dot"></span>
+              <span class="receipt-label">On-chain receipt</span>
+            </div>
+            <a href="${CONFIG.EXPLORER_URL}/tx/${msg.txHash}" target="_blank" class="tx-hash">
+              ${formatTxHash(msg.txHash)}
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M7 17L17 7M17 7H7M17 7V17"/>
+              </svg>
+            </a>
+            ${msg.model ? `
+              <span class="model-tag">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="4" y="4" width="16" height="16" rx="2" ry="2"/>
+                  <rect x="9" y="9" width="6" height="6"/>
+                  <line x1="9" y1="1" x2="9" y2="4"/>
+                  <line x1="15" y1="1" x2="15" y2="4"/>
+                  <line x1="9" y1="20" x2="9" y2="23"/>
+                  <line x1="15" y1="20" x2="15" y2="23"/>
+                  <line x1="20" y1="9" x2="23" y2="9"/>
+                  <line x1="20" y1="14" x2="23" y2="14"/>
+                  <line x1="1" y1="9" x2="4" y2="9"/>
+                  <line x1="1" y1="14" x2="4" y2="14"/>
+                </svg>
+                ${msg.model.split('/')[1] || msg.model}
+              </span>
+            ` : ''}
+          </div>
+        ` : '';
+
+        return `
+          <div class="message ${isUser ? 'user' : 'ai'}">
+            <div class="avatar ${isUser ? 'user' : 'ai'}">
+              ${isUser ? `
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+              ` : `
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2l8.66 5v10L12 22l-8.66-5V7L12 2z"/>
+                </svg>
+              `}
+            </div>
+            <div class="bubble">
+              <div class="msg-content">${escapeHtml(msg.content)}</div>
+              ${receipt}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Scroll to bottom
+      const messagesContainer2 = document.getElementById('messages-container');
+      messagesContainer2.scrollTop = messagesContainer2.scrollHeight;
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function setLoading(val) {
+      loading = val;
+      const btn = document.getElementById('send-btn');
+      btn.disabled = val;
+      if (val) {
+        btn.innerHTML = `
+          <svg class="spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10" stroke-dasharray="60" stroke-dashoffset="20"/>
+          </svg>
+        `;
+      } else {
+        btn.innerHTML = `
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"/>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+        `;
+      }
+    }
+
+    // ============================================
+    // SEND MESSAGE
+    // ============================================
+    async function sendMessage() {
+      const input = document.getElementById('input');
+      const text = input.value.trim();
+
+      if (!text || loading) return;
+
+      hideError();
+
+      // Add user message
+      messages.push({
+        id: generateId(),
+        role: 'user',
+        content: text,
+        timestamp: Date.now(),
+      });
+
+      // Add pending message
+      messages.push({
+        id: generateId(),
+        role: 'assistant',
+        content: '',
+        pending: true,
+      });
+
+      input.value = '';
+      input.style.height = 'auto';
+      setLoading(true);
+      renderMessages();
+
+      const history = messages
+        .filter(m => !m.pending)
+        .map(({ role, content }) => ({ role, content }));
+
+      try {
+        const response = await fetch(`${CONFIG.BACKEND_URL}/api/chat`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            messages: history,
+            model: selectedModel,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.detail || data.error || 'Something went wrong');
+        }
+
+        // Remove pending and add actual response
+        messages = messages.filter(m => !m.pending);
+        messages.push({
+          id: generateId(),
+          role: 'assistant',
+          content: data.content,
+          txHash: data.payment_hash,
+          model: data.model,
+          timestamp: Date.now(),
+        });
+      } catch (err) {
+        messages = messages.filter(m => !m.pending);
+        showError(err.message || 'Unknown error occurred');
+      } finally {
+        setLoading(false);
+        renderMessages();
+        input.focus();
+      }
+    }
+
+    // Initial render
+    renderMessages();
+  </script>
 </body>
 </html>
