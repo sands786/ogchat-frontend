@@ -934,6 +934,103 @@
 
     .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--surface); border: 1px solid var(--neon-green); border-radius: 8px; padding: 8px 16px; font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--neon-green); opacity: 0; transition: all 0.3s; z-index: 100; pointer-events: none; }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ============ IMAGE UPLOAD ============ */
+    .img-upload-btn {
+      width: 36px; height: 36px; border-radius: 8px;
+      background: transparent; border: 1px solid var(--border-color);
+      color: var(--text-muted); cursor: pointer; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+    }
+
+    .img-upload-btn:hover { border-color: var(--neon-cyan); color: var(--neon-cyan); box-shadow: 0 0 10px rgba(0,212,255,0.15); }
+    .img-upload-btn.has-image { border-color: var(--neon-magenta); color: var(--neon-magenta); box-shadow: 0 0 10px rgba(255,0,160,0.2); }
+    .img-upload-btn svg { width: 16px; height: 16px; }
+
+    /* Image preview strip above textarea */
+    .img-preview-strip {
+      display: none;
+      gap: 8px; flex-wrap: wrap;
+      padding: 8px 0 4px; max-width: 760px; margin: 0 auto;
+    }
+
+    .img-preview-strip.visible { display: flex; }
+
+    .img-thumb-wrap {
+      position: relative; flex-shrink: 0;
+      width: 72px; height: 72px;
+      border-radius: 8px; overflow: hidden;
+      border: 1px solid var(--border-color);
+      animation: messageSlideIn 0.2s ease-out;
+    }
+
+    .img-thumb-wrap:hover .img-remove-btn { opacity: 1; }
+
+    .img-thumb {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+
+    .img-remove-btn {
+      position: absolute; top: 3px; right: 3px;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: rgba(0,0,0,0.75); border: none;
+      color: white; cursor: pointer; opacity: 0;
+      display: flex; align-items: center; justify-content: center;
+      transition: opacity 0.2s; font-size: 10px; line-height: 1;
+    }
+
+    .img-remove-btn:hover { background: #fc6c6c; }
+
+    .img-type-badge {
+      position: absolute; bottom: 3px; left: 3px;
+      font-size: 7px; font-family: 'JetBrains Mono', monospace;
+      background: rgba(0,212,255,0.85); color: white;
+      padding: 1px 4px; border-radius: 3px; text-transform: uppercase;
+    }
+
+    /* Image in chat bubble */
+    .msg-image {
+      max-width: 100%; max-height: 320px;
+      border-radius: 8px; display: block;
+      margin-bottom: 8px; object-fit: contain;
+      border: 1px solid var(--border-color);
+      cursor: pointer; transition: opacity 0.2s;
+    }
+
+    .msg-image:hover { opacity: 0.9; }
+
+    .msg-images-grid {
+      display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px;
+    }
+
+    .msg-images-grid .msg-image {
+      max-width: calc(50% - 3px); max-height: 200px; margin-bottom: 0;
+    }
+
+    /* Vision label */
+    .vision-tag {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 7px; background: rgba(255,0,160,0.1);
+      border: 1px solid rgba(255,0,160,0.3); border-radius: 4px;
+      font-size: 8px; font-family: 'JetBrains Mono', monospace;
+      color: var(--neon-magenta); margin-right: 4px;
+    }
+
+    /* Lightbox */
+    .lightbox {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.92); z-index: 2000;
+      align-items: center; justify-content: center; padding: 20px;
+      cursor: zoom-out;
+    }
+
+    .lightbox.open { display: flex; }
+
+    .lightbox img {
+      max-width: 90vw; max-height: 90vh;
+      border-radius: 10px; object-fit: contain;
+      box-shadow: 0 0 60px rgba(0,212,255,0.2);
+    }
   </style>
   <base target="_blank">
 </head>
@@ -1135,7 +1232,22 @@
 
         <!-- Input -->
         <div class="input-area glass">
+          <!-- Image preview strip -->
+          <div class="img-preview-strip" id="img-preview-strip"></div>
+
           <div class="input-container">
+            <!-- Hidden file input -->
+            <input type="file" id="img-file-input" accept="image/*" multiple style="display:none" onchange="handleImageSelect(event)">
+
+            <!-- Image upload button -->
+            <button class="img-upload-btn" id="img-upload-btn" onclick="document.getElementById('img-file-input').click()" title="Attach image (GPT-4o, Claude, Gemini all support vision)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21 15 16 10 5 21"/>
+              </svg>
+            </button>
+
             <textarea id="input" class="input"
               placeholder="Send a message… (Enter to send, Shift+Enter for newline)"
               rows="1" onkeydown="handleKeyDown(event)"></textarea>
@@ -1148,6 +1260,7 @@
           </div>
           <p class="input-note">
             Responses verified on <a href="https://explorer.opengradient.ai" target="_blank">OpenGradient Network</a>
+            · <span style="color:var(--neon-magenta);">📷 Vision enabled for all models</span>
           </p>
         </div>
       </main>
@@ -1234,6 +1347,11 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- Lightbox for full-size image view -->
+  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <img id="lightbox-img" src="" alt="Full size preview">
   </div>
 
   <!-- ============ MODALS ============ -->
@@ -1361,6 +1479,9 @@
     function getSession(id) { return sessions.find(s => s.id === id); }
     function getCurrentSession() { return getSession(currentSessionId); }
 
+    // Pending images selected by user before sending
+    let pendingImages = []; // array of { dataUrl, mimeType, name }
+
     // ============================================
     // SHARED CHAT DETECTION — check URL hash on load
     // ============================================
@@ -1368,13 +1489,17 @@
       const hash = window.location.hash;
       if (!hash.startsWith('#share=')) return false;
       try {
-        const encoded = hash.slice(7);
-        const json = atob(encoded);
+        const encoded = hash.slice(7); // extract the base64 part
+        // Reverse URL-safe base64 substitutions, restore padding, then decode UTF-8
+        const base64 = encoded.replace(/-/g, '+').replace(/_/g, '/');
+        const padded = base64 + '=='.slice(0, (4 - base64.length % 4) % 4);
+        const json = decodeURIComponent(escape(atob(padded)));
         const data = JSON.parse(json);
         renderSharedView(data);
         return true;
       } catch(e) {
         console.warn('Invalid share URL', e);
+        showToast('Could not load shared chat — link may be corrupted.');
         return false;
       }
     }
@@ -1574,36 +1699,44 @@
     // ============================================
     function openShareModal() {
       const session = getCurrentSession();
-      if (!session || session.messages.length === 0) {
-        showToast('No messages to share yet');
+      const realMsgs = session ? session.messages.filter(m => !m.pending) : [];
+      if (!session || realMsgs.length === 0) {
+        showToast('Send at least one message before sharing');
         return;
       }
 
-      const shareData = {
-        title: session.title,
-        model: session.model,
-        systemPrompt: session.systemPrompt || '',
-        createdAt: session.createdAt,
-        messages: session.messages.filter(m => !m.pending).map(m => ({
-          role: m.role,
-          content: m.content,
-          teeSignature: m.teeSignature || null,
-          teeTimestamp: m.teeTimestamp || null,
-          model: m.model || null,
-        })),
-      };
+      try {
+        const shareData = {
+          title: session.title,
+          model: session.model,
+          systemPrompt: session.systemPrompt || '',
+          createdAt: session.createdAt,
+          messages: realMsgs.map(m => ({
+            role: m.role,
+            content: m.content,
+            teeSignature: m.teeSignature || null,
+            teeTimestamp: m.teeTimestamp || null,
+            model: m.model || null,
+          })),
+        };
 
-      const encoded = btoa(JSON.stringify(shareData));
-      const shareUrl = `${window.location.origin}${window.location.pathname}#share=${encoded}`;
+        // UTF-8 safe base64 — handles emojis, Arabic, any unicode
+        const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(shareData))))
+          .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+        const shareUrl = `${window.location.origin}${window.location.pathname}#share=${encoded}`;
 
-      document.getElementById('share-url-text').textContent = shareUrl;
+        document.getElementById('share-url-text').textContent = shareUrl;
 
-      const teeCount = shareData.messages.filter(m => m.teeSignature).length;
-      const msgCount = shareData.messages.filter(m => m.role === 'user').length;
-      document.getElementById('share-proof-count').innerHTML =
-        `🔐 ${teeCount} TEE proof${teeCount !== 1 ? 's' : ''} included · ${msgCount} message${msgCount !== 1 ? 's' : ''} · All data encoded in URL`;
+        const teeCount = shareData.messages.filter(m => m.teeSignature).length;
+        const msgCount = shareData.messages.filter(m => m.role === 'user').length;
+        document.getElementById('share-proof-count').innerHTML =
+          `🔐 ${teeCount} TEE proof${teeCount !== 1 ? 's' : ''} included · ${msgCount} message${msgCount !== 1 ? 's' : ''} · All data encoded in URL`;
 
-      document.getElementById('share-modal').classList.add('open');
+        document.getElementById('share-modal').classList.add('open');
+      } catch(e) {
+        showToast('Could not generate share link. Try again.');
+        console.error('Share encoding error:', e);
+      }
     }
 
     function copyShareUrl() {
@@ -1716,6 +1849,20 @@
 
           const isUser = msg.role === 'user';
 
+          // Build image HTML for user messages
+          const imagesHtml = (isUser && msg.images && msg.images.length > 0)
+            ? `<div class="${msg.images.length > 1 ? 'msg-images-grid' : ''}">
+                ${msg.images.map(img =>
+                  `<img class="msg-image" src="${img.dataUrl}" alt="Attached image"
+                    onclick="openLightbox('${img.dataUrl}')" title="Click to enlarge">`
+                ).join('')}
+               </div>`
+            : '';
+
+          // Vision label for AI responses that analyzed an image
+          const visionLabel = (!isUser && session && session.messages[idx - 1]?.images?.length > 0)
+            ? `<span class="vision-tag">📷 Vision</span>` : '';
+
           const receipt = (!isUser && (msg.teeSignature || msg.teeTimestamp)) ? `
             <div class="receipt">
               <div class="receipt-badge"><span class="receipt-dot"></span><span class="receipt-label">TEE Verified</span></div>
@@ -1744,7 +1891,8 @@
                   : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8.66 5v10L12 22l-8.66-5V7L12 2z"/></svg>`}
               </div>
               <div class="bubble">
-                <div class="msg-content">${isUser ? escapeHtml(msg.content) : renderMarkdown(msg.content)}</div>
+                ${imagesHtml}
+                <div class="msg-content">${isUser ? escapeHtml(msg.content) : (visionLabel + renderMarkdown(msg.content))}</div>
                 ${receipt}
                 ${actions}
               </div>
@@ -1843,13 +1991,142 @@
     function buildHistory(session) {
       const msgs = session.messages
         .filter(m => !m.pending && !m.editing)
-        .map(({ role, content }) => ({ role, content }));
+        .map(m => {
+          // If this message has images, build a vision content array
+          if (m.images && m.images.length > 0) {
+            const contentParts = [];
+            // Add text part if present
+            if (m.content) contentParts.push({ type: 'text', text: m.content });
+            // Add each image as base64
+            m.images.forEach(img => {
+              const base64 = img.dataUrl.split(',')[1]; // strip data:image/...;base64, prefix
+              contentParts.push({
+                type: 'image_url',
+                image_url: { url: `data:${img.mimeType};base64,${base64}` }
+              });
+            });
+            return { role: m.role, content: contentParts };
+          }
+          return { role: m.role, content: m.content };
+        });
 
       if (session.systemPrompt) {
-        return [{ role: 'user', content: `[System: ${session.systemPrompt}]\n\n${msgs[0]?.content || ''}` }, ...msgs.slice(1)];
+        // Inject system prompt into first user message
+        const firstUser = msgs.findIndex(m => m.role === 'user');
+        if (firstUser >= 0) {
+          const first = msgs[firstUser];
+          if (typeof first.content === 'string') {
+            msgs[firstUser] = { role: 'user', content: `[System: ${session.systemPrompt}]\n\n${first.content}` };
+          } else if (Array.isArray(first.content)) {
+            // Insert system text at the front of content array
+            first.content.unshift({ type: 'text', text: `[System: ${session.systemPrompt}]\n\n` });
+          }
+        }
       }
       return msgs;
     }
+
+    // ============================================
+    // IMAGE UPLOAD HANDLING
+    // ============================================
+    function handleImageSelect(event) {
+      const files = Array.from(event.target.files);
+      if (!files.length) return;
+
+      // Max 4 images at once
+      const remaining = 4 - pendingImages.length;
+      if (remaining <= 0) { showToast('Max 4 images per message'); return; }
+      const toProcess = files.slice(0, remaining);
+
+      toProcess.forEach(file => {
+        // Max 10MB per image
+        if (file.size > 10 * 1024 * 1024) {
+          showToast(`${file.name} is too large (max 10MB)`); return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          pendingImages.push({
+            dataUrl: e.target.result,
+            mimeType: file.type,
+            name: file.name,
+          });
+          renderImagePreview();
+        };
+        reader.readAsDataURL(file);
+      });
+
+      // Reset file input so same file can be re-selected
+      event.target.value = '';
+    }
+
+    function renderImagePreview() {
+      const strip = document.getElementById('img-preview-strip');
+      const btn = document.getElementById('img-upload-btn');
+
+      if (pendingImages.length === 0) {
+        strip.classList.remove('visible');
+        btn.classList.remove('has-image');
+        strip.innerHTML = '';
+        return;
+      }
+
+      strip.classList.add('visible');
+      btn.classList.add('has-image');
+
+      strip.innerHTML = pendingImages.map((img, i) => {
+        const ext = img.name.split('.').pop().toUpperCase().slice(0, 4);
+        return `
+          <div class="img-thumb-wrap">
+            <img class="img-thumb" src="${img.dataUrl}" alt="${escapeHtml(img.name)}">
+            <button class="img-remove-btn" onclick="removePendingImage(${i})" title="Remove">✕</button>
+            <span class="img-type-badge">${ext}</span>
+          </div>`;
+      }).join('');
+    }
+
+    function removePendingImage(idx) {
+      pendingImages.splice(idx, 1);
+      renderImagePreview();
+    }
+
+    function clearPendingImages() {
+      pendingImages = [];
+      renderImagePreview();
+    }
+
+    function openLightbox(src) {
+      document.getElementById('lightbox-img').src = src;
+      document.getElementById('lightbox').classList.add('open');
+    }
+
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('open');
+      document.getElementById('lightbox-img').src = '';
+    }
+
+    // Handle paste to grab images from clipboard
+    document.addEventListener('paste', (e) => {
+      if (document.activeElement !== document.getElementById('input')) return;
+      const items = Array.from(e.clipboardData?.items || []);
+      const imageItems = items.filter(item => item.type.startsWith('image/'));
+      if (!imageItems.length) return;
+
+      e.preventDefault();
+      imageItems.forEach(item => {
+        const file = item.getAsFile();
+        if (!file) return;
+        if (pendingImages.length >= 4) { showToast('Max 4 images per message'); return; }
+
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          pendingImages.push({ dataUrl: ev.target.result, mimeType: file.type, name: 'pasted-image.png' });
+          renderImagePreview();
+          showToast('Image pasted! 📷');
+        };
+        reader.readAsDataURL(file);
+      });
+    });
 
     // ============================================
     // SEND MESSAGE
@@ -1857,14 +2134,25 @@
     async function sendMessage() {
       const input = document.getElementById('input');
       const text = input.value.trim();
-      if (!text || loading) return;
+      // Allow sending if there's text OR images
+      if ((!text && pendingImages.length === 0) || loading) return;
 
       if (!currentSessionId) createNewChat();
       hideError();
       const session = getCurrentSession();
 
-      session.messages.push({ role: 'user', content: text });
-      updateSessionTitle(session.id, text);
+      // Capture images and clear pending before async ops
+      const images = [...pendingImages];
+      clearPendingImages();
+
+      // Build user message — store images as dataUrls for display
+      const userMsg = {
+        role: 'user',
+        content: text || '',
+        images: images.length > 0 ? images : null,
+      };
+      session.messages.push(userMsg);
+      updateSessionTitle(session.id, text || '📷 Image message');
       session.messages.push({ role: 'assistant', content: '', pending: true });
 
       input.value = '';
