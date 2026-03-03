@@ -1321,34 +1321,22 @@
           }
 
           const isUser = msg.role === 'user';
-          // Smart explorer URL based on hash format
-          function getExplorerUrl(hash) {
-            if (!hash) return null;
-            if (String(hash).startsWith('0x') && String(hash).length === 66) {
-              return 'https://sepolia.basescan.org/tx/' + hash;
-            }
-            return 'https://explorer.opengradient.ai/tx/' + hash;
-          }
-
-          function formatHash(hash) {
-            const h = String(hash);
-            if (h.length <= 18) return h;
-            return h.slice(0, 10) + '...' + h.slice(-8);
-          }
-
-          const explorerUrl = getExplorerUrl(msg.txHash);
-          const receipt = (!isUser && msg.txHash) ? `
+          const receipt = (!isUser && (msg.teeSignature || msg.teeTimestamp)) ? `
             <div class="receipt">
               <div class="receipt-badge">
                 <span class="receipt-dot"></span>
-                <span class="receipt-label">On-chain receipt</span>
+                <span class="receipt-label">TEE Verified</span>
               </div>
-              <a href="${explorerUrl}" target="_blank" class="tx-hash" title="${msg.txHash}">
-                ${formatHash(msg.txHash)}
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M7 17L17 7M17 7H7M17 7V17"/>
-                </svg>
-              </a>
+              ${msg.teeTimestamp ? `
+                <span class="tx-hash" style="cursor:default;color:var(--neon-green);" title="Verified at ${msg.teeTimestamp}">
+                  ✓ ${msg.teeTimestamp}
+                </span>
+              ` : ''}
+              ${msg.teeSignature ? `
+                <span class="tx-hash" style="cursor:default;font-size:8px;opacity:0.7;" title="TEE Signature: ${msg.teeSignature}">
+                  sig: ${msg.teeSignature.slice(0,12)}...
+                </span>
+              ` : ''}
               ${msg.model ? `<span class="model-tag">${msg.model.split('/')[1] || msg.model}</span>` : ''}
             </div>` : '';
 
@@ -1433,6 +1421,8 @@
           role: 'assistant',
           content: data.content,
           txHash: data.payment_hash,
+          teeSignature: data.tee_signature,
+          teeTimestamp: data.tee_timestamp,
           model: data.model,
           timestamp: Date.now(),
         });
