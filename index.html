@@ -1134,7 +1134,6 @@
     const CONFIG = {
       BACKEND_URL: 'https://og-chat-backend-production.up.railway.app',
       EXPLORER_URL: 'https://sepolia.basescan.org',
-      OG_EXPLORER: 'https://explorer.opengradient.ai',
       DEFAULT_MODEL: 'openai/gpt-4o',
     };
 
@@ -1322,25 +1321,18 @@
           }
 
           const isUser = msg.role === 'user';
-          const isValidTxHash = msg.txHash && String(msg.txHash).startsWith('0x') && String(msg.txHash).length === 66;
           const receipt = (!isUser && msg.txHash) ? `
             <div class="receipt">
               <div class="receipt-badge">
                 <span class="receipt-dot"></span>
                 <span class="receipt-label">On-chain receipt</span>
               </div>
-              ${isValidTxHash ? `
-                <a href="${CONFIG.EXPLORER_URL}/tx/${msg.txHash}" target="_blank" class="tx-hash" title="View on Base Sepolia BaseScan">
-                  ${String(msg.txHash).slice(0,10)}...${String(msg.txHash).slice(-8)}
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M7 17L17 7M17 7H7M17 7V17"/>
-                  </svg>
-                </a>
-              ` : `
-                <span class="tx-hash" style="cursor:default;color:var(--neon-green);opacity:0.8;" title="Payment ID: ${msg.txHash}">
-                  ${String(msg.txHash).slice(0,20)}...
-                </span>
-              `}
+              <a href="https://sepolia.basescan.org/tx/${msg.txHash}" target="_blank" class="tx-hash" title="View on Base Sepolia">
+                ${String(msg.txHash).slice(0,10)}...${String(msg.txHash).slice(-8)}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M7 17L17 7M17 7H7M17 7V17"/>
+                </svg>
+              </a>
               ${msg.model ? `<span class="model-tag">${msg.model.split('/')[1] || msg.model}</span>` : ''}
             </div>` : '';
 
