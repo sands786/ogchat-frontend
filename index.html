@@ -173,7 +173,6 @@
       font-family: 'JetBrains Mono', monospace; margin-top: 2px;
     }
 
-    /* System prompt indicator dot on chat item */
     .chat-item-sys-dot {
       width: 6px; height: 6px; border-radius: 50%;
       background: var(--neon-purple); flex-shrink: 0;
@@ -231,7 +230,6 @@
     .sidebar-toggle:hover { border-color: var(--neon-cyan); color: var(--neon-cyan); }
     .sidebar-toggle svg { width: 14px; height: 14px; }
 
-    /* Editable title */
     .current-chat-title {
       font-size: 13px; font-weight: 600; color: var(--text);
       max-width: 220px; white-space: nowrap; overflow: hidden;
@@ -448,7 +446,6 @@
       white-space: pre-wrap; word-break: break-word; color: var(--text);
     }
 
-    /* Edit mode for user messages */
     .msg-edit-area {
       width: 100%; background: var(--void-dark);
       border: 1px solid var(--neon-cyan); border-radius: 8px;
@@ -532,7 +529,6 @@
       font-size: 8px; font-family: 'JetBrains Mono', monospace; color: var(--text-muted);
     }
 
-    /* Message action buttons row */
     .msg-actions {
       display: flex; gap: 4px; margin-top: 6px; opacity: 0; transition: opacity 0.2s;
     }
@@ -835,7 +831,6 @@
 
     .modal-copy-btn:hover { background: linear-gradient(135deg, rgba(0,212,255,0.25), rgba(184,41,247,0.25)); }
 
-    /* Share modal specific */
     .share-url-box {
       display: flex; gap: 8px; align-items: center;
       background: var(--void-dark); border: 1px solid rgba(0,212,255,0.3);
@@ -934,6 +929,162 @@
 
     .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--surface); border: 1px solid var(--neon-green); border-radius: 8px; padding: 8px 16px; font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--neon-green); opacity: 0; transition: all 0.3s; z-index: 100; pointer-events: none; }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ============ USERNAME MODAL ============ */
+    #username-modal-overlay {
+      position: fixed; inset: 0; z-index: 2000;
+      background: rgba(5,5,8,0.97);
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+      animation: fadeInOverlay 0.4s ease;
+    }
+
+    @keyframes fadeInOverlay {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .username-modal {
+      width: 100%; max-width: 420px;
+      background: linear-gradient(135deg, rgba(17,17,24,0.98), rgba(26,26,36,0.98));
+      border: 1px solid rgba(0,212,255,0.35); border-radius: 20px;
+      padding: 40px 36px;
+      box-shadow: 0 0 80px rgba(0,212,255,0.15), 0 0 40px rgba(184,41,247,0.1);
+      animation: modalSlideIn 0.4s ease-out;
+      text-align: center;
+    }
+
+    .username-modal-logo {
+      width: 56px; height: 56px; margin: 0 auto 20px;
+      background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 24px rgba(0,212,255,0.4);
+    }
+
+    .username-modal-logo svg { width: 28px; height: 28px; color: white; }
+
+    .username-modal h2 {
+      font-size: 22px; font-weight: 800; letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+
+    .username-modal p {
+      font-size: 13px; color: var(--text-muted); margin-bottom: 28px; line-height: 1.6;
+    }
+
+    .username-input-wrap { position: relative; margin-bottom: 16px; }
+
+    .username-input {
+      width: 100%; padding: 13px 16px 13px 40px;
+      background: var(--void-dark); border: 1px solid var(--border-color);
+      border-radius: 12px; font-size: 14px; font-family: 'Inter', sans-serif;
+      color: var(--text); outline: none; transition: all 0.3s;
+    }
+
+    .username-input:focus {
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 0 3px rgba(0,212,255,0.15);
+    }
+
+    .username-input::placeholder { color: var(--text-muted); }
+
+    .username-input-icon {
+      position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
+      width: 16px; height: 16px; color: var(--text-muted); pointer-events: none;
+    }
+
+    .username-submit-btn {
+      width: 100%; padding: 13px;
+      background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+      border: none; border-radius: 12px;
+      color: white; font-size: 14px; font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer; transition: all 0.3s;
+      box-shadow: 0 4px 20px rgba(0,212,255,0.3);
+    }
+
+    .username-submit-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 28px rgba(0,212,255,0.45); }
+    .username-submit-btn:active { transform: translateY(0); }
+
+    .username-error {
+      font-size: 11px; font-family: 'JetBrains Mono', monospace;
+      color: #fc6c6c; margin-top: 8px; display: none;
+    }
+
+    /* ============ FEEDBACK MODAL ============ */
+    .feedback-modal {
+      width: 100%; max-width: 500px; background: var(--surface);
+      border: 1px solid rgba(0,255,157,0.3); border-radius: 16px;
+      padding: 28px; box-shadow: 0 0 60px rgba(0,255,157,0.15);
+      animation: modalSlideIn 0.3s ease-out; max-height: 80vh; overflow-y: auto;
+    }
+
+    .feedback-label {
+      font-size: 9px; font-family: 'JetBrains Mono', monospace;
+      text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted);
+      margin-bottom: 6px; display: block;
+    }
+
+    .feedback-select {
+      width: 100%; padding: 10px 12px; margin-bottom: 14px;
+      background: var(--void-dark); border: 1px solid var(--border-color);
+      border-radius: 8px; font-size: 12px; font-family: 'JetBrains Mono', monospace;
+      color: var(--text); outline: none; cursor: pointer; transition: all 0.3s;
+      appearance: none;
+    }
+
+    .feedback-select:focus { border-color: var(--neon-green); }
+
+    .feedback-text {
+      width: 100%; padding: 10px 12px; margin-bottom: 14px;
+      background: var(--void-dark); border: 1px solid var(--border-color);
+      border-radius: 8px; font-size: 13px; font-family: 'Inter', sans-serif;
+      color: var(--text); outline: none; resize: vertical; min-height: 100px;
+      transition: all 0.3s; line-height: 1.6;
+    }
+
+    .feedback-text:focus { border-color: var(--neon-green); box-shadow: 0 0 0 3px rgba(0,255,157,0.1); }
+    .feedback-text::placeholder { color: var(--text-muted); }
+
+    .feedback-rating {
+      display: flex; gap: 8px; margin-bottom: 14px;
+    }
+
+    .rating-star {
+      font-size: 22px; cursor: pointer; transition: transform 0.15s;
+      opacity: 0.4; filter: grayscale(1);
+    }
+
+    .rating-star.active, .rating-star:hover { opacity: 1; filter: none; transform: scale(1.2); }
+
+    .feedback-submit-btn {
+      width: 100%; padding: 11px;
+      background: linear-gradient(135deg, var(--neon-green), var(--neon-cyan));
+      border: none; border-radius: 10px; color: var(--void-black);
+      font-size: 12px; font-weight: 700; font-family: 'JetBrains Mono', monospace;
+      cursor: pointer; transition: all 0.3s;
+    }
+
+    .feedback-submit-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+    /* ============ USER GREETING CHIP ============ */
+    .user-greeting-chip {
+      display: flex; align-items: center; gap: 6px;
+      padding: 4px 10px 4px 6px;
+      background: rgba(0,212,255,0.08); border: 1px solid rgba(0,212,255,0.2);
+      border-radius: 20px; font-size: 11px; font-family: 'JetBrains Mono', monospace;
+      color: var(--neon-cyan); cursor: pointer; transition: all 0.2s;
+    }
+
+    .user-greeting-chip:hover { background: rgba(0,212,255,0.15); }
+
+    .user-avatar-chip {
+      width: 20px; height: 20px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 700; color: white;
+    }
   </style>
   <base target="_blank">
 </head>
@@ -941,6 +1092,36 @@
   <canvas id="bg-canvas"></canvas>
   <div class="grid-bg"></div>
   <div class="toast" id="toast"></div>
+
+  <!-- ============ USERNAME MODAL ============ -->
+  <div id="username-modal-overlay">
+    <div class="username-modal">
+      <div class="username-modal-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2l8.66 5v10L12 22l-8.66-5V7L12 2z"/>
+        </svg>
+      </div>
+      <h2 class="gradient-text-animated">Welcome to OG Chat</h2>
+      <p>Enter your name to get started with verifiable AI — every response comes with a blockchain receipt.</p>
+      <div class="username-input-wrap">
+        <svg class="username-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+        <input
+          type="text"
+          class="username-input"
+          id="username-input"
+          placeholder="Your name…"
+          maxlength="32"
+          autocomplete="off"
+          onkeydown="if(event.key==='Enter') submitUsername()"
+        />
+      </div>
+      <div class="username-error" id="username-error">Please enter your name to continue.</div>
+      <button class="username-submit-btn" onclick="submitUsername()">Enter Chat →</button>
+    </div>
+  </div>
 
   <div class="layout">
     <!-- SIDEBAR -->
@@ -976,13 +1157,19 @@
       <div class="chat-list" id="chat-list"></div>
 
       <div class="sidebar-footer">
-        <button class="export-btn" onclick="exportCurrentChat()">
+        <button class="export-btn" onclick="exportCurrentChat()" style="margin-bottom:8px;">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
             <polyline points="7 10 12 15 17 10"/>
             <line x1="12" y1="15" x2="12" y2="3"/>
           </svg>
           Export Current Chat
+        </button>
+        <button class="export-btn" onclick="openFeedbackModal()" style="border-color:rgba(0,255,157,0.3);color:var(--neon-green);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+          Send Feedback
         </button>
       </div>
     </aside>
@@ -1001,7 +1188,6 @@
               <line x1="3" y1="18" x2="21" y2="18"/>
             </svg>
           </button>
-          <!-- Editable title: click to rename -->
           <span class="current-chat-title" id="current-chat-title" onclick="startRenameChat()" title="Click to rename">New Chat</span>
         </div>
 
@@ -1012,7 +1198,12 @@
         </div>
 
         <div class="header-right">
-          <!-- System Prompt toggle -->
+          <!-- User greeting chip -->
+          <div class="user-greeting-chip" id="user-greeting-chip" onclick="openFeedbackModal()" title="Send Feedback" style="display:none;">
+            <div class="user-avatar-chip" id="user-avatar-chip">?</div>
+            <span id="user-greeting-name">User</span>
+          </div>
+
           <button class="header-btn" id="sys-prompt-btn" onclick="toggleSystemPromptBar()" title="Set system prompt for this chat">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="3"/>
@@ -1020,7 +1211,6 @@
             </svg>
             System Prompt
           </button>
-          <!-- Share chat -->
           <button class="header-btn" id="share-btn" onclick="openShareModal()" title="Share this chat as a public link">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
@@ -1089,7 +1279,8 @@
                 <path d="M12 2l8.66 5v10L12 22l-8.66-5V7L12 2z"/>
               </svg>
             </div>
-            <h1 class="empty-title gradient-text-animated">Verifiable AI Chat</h1>
+            <!-- Dynamic greeting injected here -->
+            <h1 class="empty-title gradient-text-animated" id="landing-greeting">Verifiable AI Chat</h1>
             <p class="empty-desc">
               Every response is executed on OpenGradient's decentralized network. Each message comes with a <strong>blockchain receipt</strong>.
             </p>
@@ -1339,6 +1530,56 @@
     </div>
   </div>
 
+  <!-- Feedback Modal -->
+  <div class="modal-overlay" id="feedback-modal" onclick="closeModalOnBg(event,'feedback-modal')">
+    <div class="feedback-modal">
+      <div class="modal-header">
+        <span class="modal-title" style="color:var(--neon-green);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+          Send Feedback
+        </span>
+        <button class="modal-close" onclick="closeModalById('feedback-modal')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <!-- Star Rating -->
+      <label class="feedback-label">How would you rate OG Chat?</label>
+      <div class="feedback-rating" id="feedback-stars">
+        <span class="rating-star" data-val="1" onclick="setRating(1)">⭐</span>
+        <span class="rating-star" data-val="2" onclick="setRating(2)">⭐</span>
+        <span class="rating-star" data-val="3" onclick="setRating(3)">⭐</span>
+        <span class="rating-star" data-val="4" onclick="setRating(4)">⭐</span>
+        <span class="rating-star" data-val="5" onclick="setRating(5)">⭐</span>
+      </div>
+
+      <!-- Category -->
+      <label class="feedback-label">Feedback Type</label>
+      <select class="feedback-select" id="feedback-type">
+        <option value="General">General Feedback</option>
+        <option value="Bug Report">Bug Report</option>
+        <option value="Feature Request">Feature Request</option>
+        <option value="UI/UX">UI / UX Suggestion</option>
+        <option value="Performance">Performance Issue</option>
+        <option value="Other">Other</option>
+      </select>
+
+      <!-- Message -->
+      <label class="feedback-label">Your Message</label>
+      <textarea
+        class="feedback-text"
+        id="feedback-message"
+        placeholder="Share your thoughts, report a bug, or suggest a feature…"
+      ></textarea>
+
+      <button class="feedback-submit-btn" onclick="submitFeedback()">
+        Send to Developer →
+      </button>
+    </div>
+  </div>
+
   <script>
     // ============================================
     // CONFIG
@@ -1346,6 +1587,7 @@
     const CONFIG = {
       BACKEND_URL: 'https://og-chat-backend-production.up.railway.app',
       DEFAULT_MODEL: 'openai/gpt-4o',
+      FEEDBACK_EMAIL: 'mru8412@gmail.com',
     };
 
     // ============================================
@@ -1357,12 +1599,108 @@
     let selectedModel = CONFIG.DEFAULT_MODEL;
     let isDarkMode = true;
     let searchQuery = '';
+    let currentUsername = '';
+    let feedbackRating = 0;
 
     function getSession(id) { return sessions.find(s => s.id === id); }
     function getCurrentSession() { return getSession(currentSessionId); }
 
     // ============================================
-    // SHARED CHAT DETECTION — check URL hash on load
+    // USERNAME MODAL
+    // ============================================
+    function submitUsername() {
+      const input = document.getElementById('username-input');
+      const name = input.value.trim();
+      const errEl = document.getElementById('username-error');
+
+      if (!name) {
+        errEl.style.display = 'block';
+        input.focus();
+        return;
+      }
+
+      errEl.style.display = 'none';
+      currentUsername = name;
+
+      // Dismiss modal with fade
+      const overlay = document.getElementById('username-modal-overlay');
+      overlay.style.transition = 'opacity 0.4s ease';
+      overlay.style.opacity = '0';
+      setTimeout(() => { overlay.style.display = 'none'; }, 400);
+
+      // Update greeting in landing page
+      const greetEl = document.getElementById('landing-greeting');
+      if (greetEl) greetEl.textContent = 'Hi, ' + name + '! 👋';
+
+      // Show header chip
+      const chip = document.getElementById('user-greeting-chip');
+      const chipName = document.getElementById('user-greeting-name');
+      const chipAvatar = document.getElementById('user-avatar-chip');
+      chipName.textContent = name;
+      chipAvatar.textContent = name.charAt(0).toUpperCase();
+      chip.style.display = 'flex';
+      chip.title = 'Hi ' + name + '! · Click to send feedback';
+
+      // Focus input
+      document.getElementById('input').focus();
+    }
+
+    // Allow Enter on username input
+    document.getElementById('username-input').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') submitUsername();
+    });
+
+    // Auto-focus username input
+    window.addEventListener('load', () => {
+      setTimeout(() => document.getElementById('username-input').focus(), 200);
+    });
+
+    // ============================================
+    // FEEDBACK MODAL
+    // ============================================
+    function openFeedbackModal() {
+      feedbackRating = 0;
+      updateStars(0);
+      document.getElementById('feedback-message').value = '';
+      document.getElementById('feedback-type').value = 'General';
+      document.getElementById('feedback-modal').classList.add('open');
+    }
+
+    function setRating(val) {
+      feedbackRating = val;
+      updateStars(val);
+    }
+
+    function updateStars(val) {
+      document.querySelectorAll('.rating-star').forEach((star, i) => {
+        star.classList.toggle('active', i < val);
+      });
+    }
+
+    function submitFeedback() {
+      const msg = document.getElementById('feedback-message').value.trim();
+      const type = document.getElementById('feedback-type').value;
+      const stars = feedbackRating > 0 ? '★'.repeat(feedbackRating) + '☆'.repeat(5 - feedbackRating) : 'Not rated';
+
+      const subject = encodeURIComponent(`[OG Chat Feedback] ${type}`);
+      const body = encodeURIComponent(
+        `OG Chat Feedback\n` +
+        `─────────────────\n` +
+        `From: ${currentUsername || 'Anonymous'}\n` +
+        `Type: ${type}\n` +
+        `Rating: ${stars}\n\n` +
+        `Message:\n${msg || '(No message provided)'}\n\n` +
+        `─────────────────\n` +
+        `Sent from OG Chat · ${new Date().toLocaleString()}`
+      );
+
+      window.open(`mailto:${CONFIG.FEEDBACK_EMAIL}?subject=${subject}&body=${body}`, '_blank');
+      closeModalById('feedback-modal');
+      showToast('Opening email client… Thank you! 💚');
+    }
+
+    // ============================================
+    // SHARED CHAT DETECTION
     // ============================================
     function checkSharedUrl() {
       const hash = window.location.hash;
@@ -1415,13 +1753,11 @@
           </div>`;
       }).join('');
 
-      // Store data for "Continue in new chat"
       window._sharedData = data;
     }
 
     function loadSharedAsNew() {
       if (!window._sharedData) return;
-      // Clear the hash
       history.replaceState(null, '', window.location.pathname);
       document.getElementById('shared-view').classList.remove('active');
       document.getElementById('chat-view').classList.remove('hidden');
@@ -1478,7 +1814,6 @@
         updateModelButtons();
         document.getElementById('current-chat-title').textContent = session.title;
         document.getElementById('system-prompt-input').value = session.systemPrompt || '';
-        // Update system prompt bar button highlight
         document.getElementById('sys-prompt-btn').classList.toggle('active-prompt', !!(session.systemPrompt));
       }
       renderSidebar();
@@ -1514,7 +1849,7 @@
     }
 
     // ============================================
-    // RENAME CHAT (click title in header)
+    // RENAME CHAT
     // ============================================
     function startRenameChat() {
       const session = getCurrentSession();
@@ -1554,7 +1889,6 @@
     // ============================================
     function toggleSystemPromptBar() {
       const bar = document.getElementById('system-prompt-bar');
-      const btn = document.getElementById('sys-prompt-btn');
       bar.classList.toggle('visible');
       if (bar.classList.contains('visible')) {
         document.getElementById('system-prompt-input').focus();
@@ -1691,6 +2025,9 @@
       if (msgs.length === 0) {
         emptyState.classList.remove('hidden');
         messagesEl.innerHTML = '';
+        // Refresh greeting
+        const greetEl = document.getElementById('landing-greeting');
+        if (greetEl && currentUsername) greetEl.textContent = 'Hi, ' + currentUsername + '! 👋';
       } else {
         emptyState.classList.add('hidden');
         messagesEl.innerHTML = msgs.map((msg, idx) => {
@@ -1767,7 +2104,6 @@
     function startEdit(idx) {
       const session = getCurrentSession();
       if (!session || loading) return;
-      // Mark message as editing
       session.messages[idx].editing = true;
       renderMessages();
       const area = document.getElementById(`edit-area-${idx}`);
@@ -1788,20 +2124,13 @@
       if (!area) return;
       const newText = area.value.trim();
       if (!newText) return;
-
-      // Update message content, clear editing flag
       session.messages[idx].content = newText;
       session.messages[idx].editing = false;
-
-      // Remove all messages after this user message (the AI response and anything beyond)
       session.messages = session.messages.slice(0, idx + 1);
-
-      // Resend
       resendFrom(session, newText);
     }
 
     async function resendFrom(session, text) {
-      // Add pending
       session.messages.push({ role: 'assistant', content: '', pending: true });
       setLoading(true);
       renderMessages();
@@ -1838,7 +2167,7 @@
     }
 
     // ============================================
-    // BUILD HISTORY (includes system prompt)
+    // BUILD HISTORY
     // ============================================
     function buildHistory(session) {
       const msgs = session.messages
@@ -2126,9 +2455,7 @@
     if (!checkSharedUrl()) {
       createNewChat();
     } else {
-      // Still init sessions in background for sidebar
       createNewChat();
-      // Then switch back to shared view (checkSharedUrl already rendered it)
       document.getElementById('chat-view').classList.add('hidden');
       document.getElementById('shared-view').classList.add('active');
     }
