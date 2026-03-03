@@ -859,6 +859,214 @@
     .back-btn:hover { color: var(--neon-cyan); }
     .back-btn svg { width: 14px; height: 14px; }
 
+
+    /* ============ LIGHT MODE ============ */
+    body.light-mode {
+      --void-black: #f0f0f5;
+      --void-dark: #e4e4ed;
+      --surface: #ffffff;
+      --surface-2: #f5f5fa;
+      --border-color: #d0d0e0;
+      --text: #1a1a2e;
+      --text-muted: #6b6b80;
+    }
+
+    body.light-mode #bg-canvas { opacity: 0.15; }
+    body.light-mode .grid-bg { opacity: 0.3; }
+    body.light-mode .message.user .bubble { background: #e8e8f5; }
+    body.light-mode .message.ai .bubble { background: #ffffff; border-color: #d0d0e0; }
+    body.light-mode .input { background: #ffffff; color: #1a1a2e; }
+    body.light-mode .sidebar { background: rgba(240,240,245,0.98); }
+
+    /* ============ SEARCH BAR ============ */
+    .search-wrapper {
+      padding: 8px 8px 4px;
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      background: var(--void-dark);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 7px 10px 7px 30px;
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text);
+      outline: none;
+      transition: all 0.3s;
+    }
+
+    .search-input::placeholder { color: var(--text-muted); }
+    .search-input:focus { border-color: var(--neon-cyan); }
+
+    .search-icon {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 12px;
+      height: 12px;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .no-results {
+      padding: 16px 10px;
+      text-align: center;
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-muted);
+    }
+
+    /* ============ TEE MODAL ============ */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.8);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      width: 100%;
+      max-width: 560px;
+      background: var(--surface);
+      border: 1px solid rgba(0,212,255,0.3);
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 0 60px rgba(0,212,255,0.2);
+      animation: modalSlideIn 0.3s ease-out;
+      position: relative;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    @keyframes modalSlideIn {
+      from { opacity: 0; transform: scale(0.95) translateY(10px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .modal-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--neon-cyan);
+      font-family: 'JetBrains Mono', monospace;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .modal-close {
+      width: 28px; height: 28px;
+      border-radius: 6px;
+      background: var(--surface-2);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .modal-close:hover { border-color: #fc6c6c; color: #fc6c6c; }
+    .modal-close svg { width: 12px; height: 12px; }
+
+    .modal-field {
+      margin-bottom: 16px;
+    }
+
+    .modal-field-label {
+      font-size: 9px;
+      font-family: 'JetBrains Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .modal-field-value {
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--neon-green);
+      background: var(--void-dark);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 10px 12px;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+
+    .modal-copy-btn {
+      width: 100%;
+      margin-top: 16px;
+      padding: 10px;
+      background: linear-gradient(135deg, rgba(0,212,255,0.15), rgba(184,41,247,0.15));
+      border: 1px solid rgba(0,212,255,0.3);
+      border-radius: 8px;
+      color: var(--neon-cyan);
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .modal-copy-btn:hover { background: linear-gradient(135deg, rgba(0,212,255,0.25), rgba(184,41,247,0.25)); }
+
+    /* ============ THEME TOGGLE ============ */
+    .theme-btn {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .theme-btn:hover { border-color: var(--neon-yellow); color: var(--neon-yellow); }
+    .theme-btn svg { width: 14px; height: 14px; }
+
+    /* ============ STREAMING CURSOR ============ */
+    .streaming-cursor {
+      display: inline-block;
+      width: 2px;
+      height: 14px;
+      background: var(--neon-cyan);
+      margin-left: 2px;
+      vertical-align: middle;
+      animation: cursorBlink 0.7s ease-in-out infinite;
+    }
+
+    @keyframes cursorBlink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    /* TEE sig clickable */
+    .tee-sig-link {
+      cursor: pointer;
+      text-decoration: underline dotted;
+      transition: color 0.2s;
+    }
+    .tee-sig-link:hover { color: var(--neon-cyan); }
+
     .hidden { display: none !important; }
 
     /* ============ SIDEBAR OVERLAY (mobile) ============ */
@@ -938,6 +1146,12 @@
 
       <p class="sidebar-section-label">Chat History</p>
 
+      <div class="search-wrapper">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" class="search-input" id="search-input" placeholder="Search chats..." oninput="searchChats(this.value)">
+      </div>
       <div class="chat-list" id="chat-list">
         <!-- populated by JS -->
       </div>
@@ -979,7 +1193,16 @@
         </div>
 
         <div class="header-right">
-          <button class="creator-btn" onclick="showProfile()">
+          <button class="theme-btn" onclick="toggleTheme()" id="theme-btn" title="Toggle light/dark mode">
+          <svg id="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          </svg>
+        </button>
+        <button class="creator-btn" onclick="showProfile()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
               <circle cx="12" cy="7" r="4"/>
@@ -1257,12 +1480,17 @@
     // ============================================
     function renderSidebar() {
       const list = document.getElementById('chat-list');
+      const filtered = sessions.filter(s => !searchQuery || s.title.toLowerCase().includes(searchQuery) || s.messages.some(m => m.content && m.content.toLowerCase().includes(searchQuery)));
+      if (filtered.length === 0 && sessions.length > 0) {
+        list.innerHTML = `<p class="no-results">No chats match "${searchQuery}"</p>`;
+        return;
+      }
       if (sessions.length === 0) {
         list.innerHTML = `<p style="padding:12px 10px;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--text-muted);text-align:center;">No chats yet</p>`;
         return;
       }
 
-      list.innerHTML = sessions.map(s => `
+      list.innerHTML = filtered.map(s => `
         <div class="chat-item ${s.id === currentSessionId ? 'active' : ''}" onclick="switchToSession('${s.id}')">
           <div class="chat-item-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1328,13 +1556,13 @@
                 <span class="receipt-label">TEE Verified</span>
               </div>
               ${msg.teeTimestamp ? `
-                <span class="tx-hash" style="cursor:default;color:var(--neon-green);" title="Verified at ${msg.teeTimestamp}">
+                <span class="tx-hash" style="cursor:default;color:var(--neon-green);">
                   ✓ ${msg.teeTimestamp}
                 </span>
               ` : ''}
               ${msg.teeSignature ? `
-                <span class="tx-hash" style="cursor:default;font-size:8px;opacity:0.7;" title="TEE Signature: ${msg.teeSignature}">
-                  sig: ${msg.teeSignature.slice(0,12)}...
+                <span class="tx-hash tee-sig-link" onclick="showTEEModal(${JSON.stringify({teeTimestamp: msg.teeTimestamp, teeSignature: msg.teeSignature, model: msg.model}).replace(/"/g, '&quot;')})" title="Click to view full TEE proof">
+                  sig: ${String(msg.teeSignature).slice(0,12)}... 🔍
                 </span>
               ` : ''}
               ${msg.model ? `<span class="model-tag">${msg.model.split('/')[1] || msg.model}</span>` : ''}
@@ -1356,7 +1584,7 @@
                   : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8.66 5v10L12 22l-8.66-5V7L12 2z"/></svg>`}
               </div>
               <div class="bubble">
-                <div class="msg-content">${escapeHtml(msg.content)}</div>
+                <div class="msg-content">${escapeHtml(msg.content)}${msg.streaming ? '<span class="streaming-cursor"></span>' : ''}</div>
                 ${receipt}
                 ${copyBtn}
               </div>
@@ -1416,23 +1644,42 @@
         const data = await response.json();
         if (!response.ok) throw new Error(data.detail || 'Something went wrong');
 
+        // Remove pending message
         session.messages = session.messages.filter(m => !m.pending);
-        session.messages.push({
+
+        // Add empty assistant message for streaming effect
+        const aiMsg = {
           role: 'assistant',
-          content: data.content,
+          content: '',
           txHash: data.payment_hash,
           teeSignature: data.tee_signature,
           teeTimestamp: data.tee_timestamp,
           model: data.model,
           timestamp: Date.now(),
-        });
-      } catch (err) {
-        session.messages = session.messages.filter(m => !m.pending);
-        showError(err.message || 'Unknown error');
-      } finally {
+          streaming: true,
+        };
+        session.messages.push(aiMsg);
         setLoading(false);
+
+        // Stream the text word by word
+        const fullText = data.content;
+        const words = fullText.split(' ');
+        for (let i = 0; i < words.length; i++) {
+          aiMsg.content += (i === 0 ? '' : ' ') + words[i];
+          renderMessages();
+          await new Promise(r => setTimeout(r, 18));
+        }
+        aiMsg.streaming = false;
         renderMessages();
         renderSidebar();
+
+      } catch (err) {
+        session.messages = session.messages.filter(m => !m.pending);
+        setLoading(false);
+        showError(err.message || 'Unknown error');
+        renderMessages();
+        renderSidebar();
+      } finally {
         input.focus();
       }
     }
@@ -1599,8 +1846,109 @@
 
     // ============================================
     // INIT — start with one new chat
+
+    // ============================================
+    // THEME TOGGLE
+    // ============================================
+    let isDarkMode = true;
+
+    function toggleTheme() {
+      isDarkMode = !isDarkMode;
+      document.body.classList.toggle('light-mode', !isDarkMode);
+      const icon = document.getElementById('theme-icon');
+      if (!isDarkMode) {
+        icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+      } else {
+        icon.innerHTML = '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+      }
+    }
+
+    // ============================================
+    // TEE MODAL
+    // ============================================
+    function showTEEModal(msgData) {
+      let msg = msgData;
+      if (typeof msgData === 'string') {
+        try { msg = JSON.parse(msgData); } catch(e) { msg = {}; }
+      }
+      document.getElementById('modal-timestamp').textContent = msg.teeTimestamp || '—';
+      document.getElementById('modal-model').textContent = msg.model || '—';
+      document.getElementById('modal-signature').textContent = msg.teeSignature || '—';
+      document.getElementById('tee-modal').classList.add('open');
+    }
+
+    function closeModal(e) {
+      if (e.target === document.getElementById('tee-modal')) {
+        document.getElementById('tee-modal').classList.remove('open');
+      }
+    }
+
+    function copySignature() {
+      const sig = document.getElementById('modal-signature').textContent;
+      navigator.clipboard.writeText(sig).then(() => showToast('Signature copied!'));
+    }
+
+    // ============================================
+    // SEARCH CHATS
+    // ============================================
+    let searchQuery = '';
+
+    function searchChats(query) {
+      searchQuery = query.toLowerCase().trim();
+      renderSidebar();
+    }
+
+    // ============================================
+    // INIT
+    // ============================================
     // ============================================
     createNewChat();
   </script>
+
+  <!-- TEE Signature Modal -->
+  <div class="modal-overlay" id="tee-modal" onclick="closeModal(event)">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+          TEE Verification Proof
+        </span>
+        <button class="modal-close" onclick="document.getElementById('tee-modal').classList.remove('open')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-field">
+        <div class="modal-field-label">Verification Status</div>
+        <div class="modal-field-value" style="color:var(--neon-green);">✓ Verified inside Trusted Execution Environment (TEE)</div>
+      </div>
+      <div class="modal-field">
+        <div class="modal-field-label">Verified At</div>
+        <div class="modal-field-value" id="modal-timestamp">—</div>
+      </div>
+      <div class="modal-field">
+        <div class="modal-field-label">Model</div>
+        <div class="modal-field-value" id="modal-model">—</div>
+      </div>
+      <div class="modal-field">
+        <div class="modal-field-label">TEE Cryptographic Signature</div>
+        <div class="modal-field-value" id="modal-signature" style="font-size:10px;">—</div>
+      </div>
+      <div class="modal-field">
+        <div class="modal-field-label">What this proves</div>
+        <div class="modal-field-value" style="color:var(--text-muted);font-size:10px;line-height:1.8;">
+          • The AI inference ran inside a verified secure enclave<br>
+          • The output has not been tampered with<br>
+          • The specific prompt was used as input<br>
+          • Powered by OpenGradient's decentralized TEE network
+        </div>
+      </div>
+      <button class="modal-copy-btn" onclick="copySignature()">Copy Full Signature</button>
+    </div>
+  </div>
+
 </body>
 </html>
