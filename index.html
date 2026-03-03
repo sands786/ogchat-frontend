@@ -1964,7 +1964,7 @@
           body: JSON.stringify({ messages: history, model: selectedModel }),
         });
         const data = await response.json();
-        if (!response.ok) throw new Error(data.detail || 'Something went wrong');
+        if (!response.ok) throw new Error(parseApiError(data));
 
         session.messages = session.messages.filter(m => !m.pending);
         session.messages.push({
@@ -1986,41 +1986,32 @@
     }
 
     // ============================================
-    // BUILD HISTORY (includes system prompt)
+    // BUILD HISTORY (includes system prompt + images)
     // ============================================
     function buildHistory(session) {
-      const msgs = session.messages
-        .filter(m => !m.pending && !m.editing)
-        .map(m => {
-          // If this message has images, build a vision content array
-          if (m.images && m.images.length > 0) {
-            const contentParts = [];
-            // Add text part if present
-            if (m.content) contentParts.push({ type: 'text', text: m.content });
-            // Add each image as base64
-            m.images.forEach(img => {
-              const base64 = img.dataUrl.split(',')[1]; // strip data:image/...;base64, prefix
-              contentParts.push({
-                type: 'image_url',
-                image_url: { url: `data:${img.mimeType};base64,${base64}` }
-              });
-            });
-            return { role: m.role, content: contentParts };
-          }
-          return { role: m.role, content: m.content };
-        });
+      // Build messages with content always as a STRING (backend schema compatibility)
+      // Images are attached as a separate `images` field on the last user message
+      const rawMsgs = session.messages.filter(m => !m.pending && !m.editing);
+
+      const msgs = rawMsgs.map(m => ({
+        role: m.role,
+        content: m.content || '',
+        // Pass images inline only for the message that has them
+        ...(m.images && m.images.length > 0 ? {
+          images: m.images.map(img => ({
+            type: img.mimeType,
+            data: img.dataUrl.split(',')[1], // base64 only, no data URL prefix
+          }))
+        } : {}),
+      }));
 
       if (session.systemPrompt) {
-        // Inject system prompt into first user message
         const firstUser = msgs.findIndex(m => m.role === 'user');
         if (firstUser >= 0) {
-          const first = msgs[firstUser];
-          if (typeof first.content === 'string') {
-            msgs[firstUser] = { role: 'user', content: `[System: ${session.systemPrompt}]\n\n${first.content}` };
-          } else if (Array.isArray(first.content)) {
-            // Insert system text at the front of content array
-            first.content.unshift({ type: 'text', text: `[System: ${session.systemPrompt}]\n\n` });
-          }
+          msgs[firstUser] = {
+            ...msgs[firstUser],
+            content: `[System: ${session.systemPrompt}]\n\n${msgs[firstUser].content}`,
+          };
         }
       }
       return msgs;
@@ -2170,7 +2161,7 @@
           body: JSON.stringify({ messages: history, model: selectedModel }),
         });
         const data = await response.json();
-        if (!response.ok) throw new Error(data.detail || 'Something went wrong');
+        if (!response.ok) throw new Error(parseApiError(data));
 
         session.messages = session.messages.filter(m => !m.pending);
         session.messages.push({
@@ -2202,6 +2193,17 @@
       btn.innerHTML = val
         ? `<svg class="spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-dasharray="60" stroke-dashoffset="20"/></svg>`
         : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>`;
+    }
+
+    function parseApiError(data) {
+      // FastAPI returns detail as an array of validation error objects e.g. [{loc,msg,type}]
+      if (Array.isArray(data.detail)) {
+        return data.detail.map(e => e.msg || JSON.stringify(e)).join('; ');
+      }
+      if (typeof data.detail === 'string') return data.detail;
+      if (typeof data.message === 'string') return data.message;
+      if (typeof data.error === 'string') return data.error;
+      return 'Something went wrong — check the console for details';
     }
 
     function showError(msg) { document.getElementById('error-text').textContent = msg; document.getElementById('error-banner').classList.remove('hidden'); }
