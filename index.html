@@ -1321,14 +1321,30 @@
           }
 
           const isUser = msg.role === 'user';
+          // Smart explorer URL based on hash format
+          function getExplorerUrl(hash) {
+            if (!hash) return null;
+            if (String(hash).startsWith('0x') && String(hash).length === 66) {
+              return 'https://sepolia.basescan.org/tx/' + hash;
+            }
+            return 'https://explorer.opengradient.ai/tx/' + hash;
+          }
+
+          function formatHash(hash) {
+            const h = String(hash);
+            if (h.length <= 18) return h;
+            return h.slice(0, 10) + '...' + h.slice(-8);
+          }
+
+          const explorerUrl = getExplorerUrl(msg.txHash);
           const receipt = (!isUser && msg.txHash) ? `
             <div class="receipt">
               <div class="receipt-badge">
                 <span class="receipt-dot"></span>
                 <span class="receipt-label">On-chain receipt</span>
               </div>
-              <a href="https://sepolia.basescan.org/tx/${msg.txHash}" target="_blank" class="tx-hash" title="View on Base Sepolia">
-                ${String(msg.txHash).slice(0,10)}...${String(msg.txHash).slice(-8)}
+              <a href="${explorerUrl}" target="_blank" class="tx-hash" title="${msg.txHash}">
+                ${formatHash(msg.txHash)}
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M7 17L17 7M17 7H7M17 7V17"/>
                 </svg>
